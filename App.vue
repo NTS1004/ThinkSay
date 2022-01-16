@@ -1,8 +1,9 @@
 <script>
 import { funcPutInitInfo } from "@/api/info/index.js"
 import { funGetChatRecordList, funGetApplyRecordList } from "@/api/record"
-import ws from "@/utils/request/webSocket.js"
 import { mapState, mapMutations, mapActions } from "vuex"
+import ws from "@/utils/request/webSocket.js"
+import { host } from "@/utils/config.js"
 
 export default {
   data() {
@@ -92,7 +93,7 @@ export default {
       }
     },
     connectWebSocket(id) {
-      this.ws = new ws(`ws://192.168.1.100:1437?id=${id}`, this.receive)
+      this.ws = new ws(`ws://${host}?id=${id}`, this.receive)
     },
 	deleteObjactKey(data, keys) {
 		let json = {}

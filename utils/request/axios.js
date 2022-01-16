@@ -1,6 +1,7 @@
 import request from 'luch-request'
 import Toast from '@/utils/toast.js'
 import Modal from '@/utils/modal.js'
+import { host } from '@/utils/config.js'
 
 const axios = new request()
 
@@ -9,7 +10,7 @@ let BASE_URL
 if (alert) {
 	BASE_URL = ''
 } else {
-	BASE_URL = `http://192.168.1.100:1437`
+	BASE_URL = `http://${host}`
 }
 
 axios.setConfig((config) => {
