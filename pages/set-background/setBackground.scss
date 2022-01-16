@@ -1,0 +1,41 @@
+.box {
+	height: 100vh;
+	width: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	display: flex;
+	flex-flow: column;
+	.mask {
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.6);
+	}
+	.select-box {
+		width: 100%;
+		position: fixed;
+		top: 0;
+		overflow: hidden;
+	}
+	.header-box {
+		position: fixed;
+		width: 100%;
+		top: 0;
+		z-index: 999;
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			color: #434343;
+			text-shadow: 0px 0px 18px #ffffff, 0px 0px 18px #ffffff;
+			position: relative;
+			padding: 25rpx 30rpx;
+			.uIcon {
+				font-size: 40rpx;
+			}
+		}
+		.noTop {
+			color: #ffffff;
+		}
+	}
+}

@@ -1,0 +1,57 @@
+{
+	"easycom": {
+		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [{
+			"path": "pages/index/index",
+			"title": "首页"
+		},
+		{
+			"path": "pages/login/index",
+			"title": "登录"
+		},
+		{
+			"path": "pages/signup/index",
+			"title": "注册"
+		},
+		{
+			"path": "pages/background/index",
+			"title": "设置背景"
+		},
+		{
+			"path": "pages/search/index",
+			"title": "搜索"
+		},
+		{
+			"path": "pages/chat/index",
+			"title": "聊天"
+		},
+		{
+			"path": "pages/info/index",
+			"title": "详情"
+		},
+		{
+			"path": "pages/set-background/index",
+			"title": "高级设置背景"
+		},
+		{
+			"path": "pages/new-friends/index",
+			"title": "新的朋友"
+		},
+		{
+			"path": "pages/qr-code/index",
+			"title": "二维码名片"
+		},
+		{
+			"path": "pages/rtc/index",
+			"title": "视频/通话界面"
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"navigationStyle": "custom"
+	}
+}

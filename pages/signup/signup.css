@@ -1,0 +1,60 @@
+.tab-box {
+	height: 500rpx;
+	background-image: url('https://www.cjh1004.vip/ThinkSay/14.jpg!upyun520/fw/1300');
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	position: relative;
+}
+.icon-box  {
+	display: flex;
+}
+.form-box {
+	margin: 50rpx 65rpx;
+}
+.form-input {
+	border-bottom: .3px solid #EBEBEB;
+	height: 78rpx;
+	margin-bottom: 35rpx;
+	color: #434343;
+	text-align: center;
+	font-family: 'Permanent Marker';
+}
+.form-input-placeholder {
+	color: #999;
+	font-weight: 300;
+	font-size: 31rpx;
+}
+.form-btn {
+	margin-top: 70rpx;
+	border: none;
+	color: #FFFFFF;
+}
+
+.iconBox {
+	display: flex;
+}
+
+.uIcon {
+	margin: 0 30rpx;
+	color: #FFFFFF;
+	font-size: 45rpx;
+	margin-top: 30rpx;
+}
+
+
+.title {
+	position: absolute;
+	color: #FFFFFF;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 68rpx;
+	font-family: 'Permanent Marker';
+}
+
+#bg-svg {
+	position: absolute;
+	bottom: -205rpx;
+	width: 100%;
+}

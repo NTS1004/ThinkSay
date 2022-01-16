@@ -1,0 +1,19 @@
+.newFriends {
+	.uIcon {
+		font-size: 40rpx;
+		color: #434343;
+	}
+	.u-input {
+		margin: 5rpx 30rpx 26rpx 30rpx;
+		font-family: 'Permanent Marker';
+		text-align: center;
+	}
+	.u-input .input-placeholder {
+		font-family: none;
+	}
+	.u-input /deep/ .input-placeholder::before {
+		font-family: iconfont;
+		content: '\e60e';
+		margin-right: 10rpx;
+	}
+}

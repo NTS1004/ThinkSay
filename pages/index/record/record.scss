@@ -1,0 +1,64 @@
+.activeItem {
+	background: #fdfbfb;
+}
+.item {
+	display: flex;
+	padding: 26rpx 30rpx 20rpx 30rpx;
+	border-bottom: .5px solid #f5f7fa;
+	.friendName {
+		font-weight: 500;
+		font-size: 30rpx;
+		font-family: 'Permanent Marker';
+	}
+	.openTime {
+		font-size: 23rpx;
+		color: #888888
+	}
+	
+	.itemBody {
+		flex: 1;
+		margin-left: 28rpx;
+		padding: 0rpx 0 12rpx 0;
+		display: flex;
+		flex-flow: column;
+		justify-content: space-around
+	}
+	
+	.itemHead {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	
+	.itemBottom {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 4rpx;
+	}
+	
+	.badge {
+		font-size: 10rpx;
+		min-width: 38rpx;
+		min-height: 38rpx;
+		border-radius: 50%;
+		background: #52acff;
+		color: #FFFFFF;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		transform: scale(.9);
+		.badge-count {
+			margin-top: -2rpx;
+		}
+	}
+	
+	.context {
+		font-size: 24rpx;
+		color: #888888;
+		max-width: 480rpx;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}

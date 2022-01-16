@@ -1,0 +1,109 @@
+.content {
+	display: flex;
+	flex-flow: column;
+	height: 100vh;
+}
+
+.infoBox {
+	width: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	border-radius: 0 0 28rpx 28rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	box-shadow: 0px 2px 2px #c8c8c8;
+}
+
+.headIcon {
+	position: absolute;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	z-index: 20;
+}
+
+.uIcon {
+	margin: 0 30rpx;
+	color: #ffffff;
+	font-size: 43rpx;
+	text-shadow: 0px 0px 2px #434343, 0px 0px 20px #ffffff;
+	position: relative;
+}
+
+.img {
+	width: 176rpx;
+	height: 176rpx;
+	border-radius: 50%;
+	z-index: 10;
+	background-size: cover;
+	background-position: center;
+	position: relative;
+	display: flex;
+	justify-content: center;
+}
+
+.name {
+	margin-top: 18rpx;
+	font-size: 32rpx;
+	color: #ffffff;
+	font-family: 'Permanent Marker';
+	font-weight: bold;
+	text-shadow: 0px 0px 2px #434343, 0px 0px 20px #ffffff;
+}
+
+.tabBar {
+	position: absolute;
+	width: 90%;
+	height: 100rpx;
+	border-radius: 42rpx;
+	background: #ffffff;
+	bottom: -45rpx;
+	box-shadow: 0 0 6px #c8c7cc;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.tabIcon {
+	color: #434343;
+	font-size: 43rpx;
+	position: relative;
+}
+
+.active {
+	color: #52acff;
+}
+
+.swiper {
+	flex: 1;
+	margin: 60rpx 0 0 0;
+}
+
+.slot-content {
+	margin: 32rpx 30rpx 40rpx 30rpx;
+	.input {
+		text-align: center;
+		font-size: 28rpx;
+		font-family: 'Permanent Marker';
+	}
+	.input-placeholder {
+		color: #999;
+		font-weight: 300;
+		font-size: 28rpx;
+	}
+}
+
+.scroll {
+	z-index: 300;
+}
+
+.scroll ::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	background-color: transparent;
+}

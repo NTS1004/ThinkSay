@@ -1,0 +1,11 @@
+{
+	"devDependencies": {
+		"vuex": "^3.6.2"
+	},
+	"dependencies": {
+		"axios": "^0.21.4",
+		"luch-request": "^3.0.7",
+		"moment": "^2.29.1",
+		"qs": "^6.10.1"
+	}
+}
