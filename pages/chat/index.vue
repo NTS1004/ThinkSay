@@ -59,7 +59,7 @@
 				></u-input>
 				<view class="record_bottom" id="textScrollBottom"></view>
 			</scroll-view>
-			<view class="iconfont icon-fuwenbenbianjiqi_tupian uIcon" style="font-size: 44rpx"></view>
+			<view class="iconfont icon-fuwenbenbianjiqi_tupian uIcon" style="font-size: 44rpx" @tap="selectImage"></view>
 			<view :class="['iconfont', 'icon-fasong', 'uIcon', params.msg ? 'status' : '']" style="margin: 0 24rpx 0 26rpx" @tap="send"></view>
 		</view>
 		<u-action-sheet :list="list" v-model="show" @click="selectConnect"></u-action-sheet>
@@ -228,6 +228,22 @@ export default {
 				animationType: 'zoom-fade-out'
 			})
 		},
+		selectImage() {
+			plus.gallery.pick(({ files }) => {
+				files.forEach(item => {
+					uni.getImageInfo({
+						src: item,
+						success: ({ width, height, type, path }) => {
+							console.log(width)
+							console.log(height)
+						}
+					})
+				})
+			}, false, {
+				multiple: true,
+				maximum: 9
+			})
+		},
 		scrollToUpper() {
 			if (this.last_page) return
 			this.pageNumber += 1
@@ -321,7 +337,6 @@ export default {
 	},
 	onUnload() {
 		this.saveFriendChatRecord(this.friendId)
-		this.clearFriendChatRecord()
 	}
 }
 </script>

@@ -92,7 +92,7 @@ export default {
       }
     },
     connectWebSocket(id) {
-      this.ws = new ws(`ws://192.168.1.102:1437?id=${id}`, this.receive)
+      this.ws = new ws(`ws://192.168.1.100:1437?id=${id}`, this.receive)
     },
 	deleteObjactKey(data, keys) {
 		let json = {}

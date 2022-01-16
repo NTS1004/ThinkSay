@@ -1,5 +1,4 @@
 import request from 'luch-request'
-import qs from "qs"
 import Toast from '@/utils/toast.js'
 import Modal from '@/utils/modal.js'
 
@@ -9,10 +8,8 @@ let BASE_URL
 
 if (alert) {
 	BASE_URL = ''
-} else if (process.env.NODE_ENV === 'development') {
-	BASE_URL = 'http://192.168.1.102:1437'
-} else if (process.env.NODE_ENV === 'production') {
-	BASE_URL = 'http://192.168.1.101:1437' //http://192.168.1.102:1437
+} else {
+	BASE_URL = `http://192.168.1.100:1437`
 }
 
 axios.setConfig((config) => {
