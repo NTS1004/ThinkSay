@@ -49,11 +49,7 @@ module.exports = (wss) => {
               })
             )
           } else {
-            await axios.get(`http://localhost:1437/record/chat/${friendId}/save`, {
-              params: {
-                ...record
-              }
-            })
+            await axios.post(`http://localhost:1437/record/chat/${friendId}/save`, record)
           }
         } else {
           ws.send(

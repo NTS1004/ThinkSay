@@ -39,6 +39,10 @@
 					.box {
 						display: flex;
 						align-items: center;
+						.image {
+							border: .1px solid #c8c8c8;
+							border-radius: 8rpx;
+						}
 						.icon-cloud-error {
 							font-size: 42rpx;
 							color: red;

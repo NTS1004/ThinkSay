@@ -29,13 +29,19 @@ export default {
 		message() {
 			return (item) => {
 				let message
-				const { msg, tips = [] } = item
-				if (tips.length) {
-					message = tips[tips.length - 1]
-				} else {
-					message = msg
-				}
+				const { msg, tip, name } = item
+				message = msg || this.ErrTipText(tip, name) || tip
 				return message
+			}
+		},
+		ErrTipText() {
+			return (tip, name) => {
+				let errTipText = {
+					network_status: '没有网络你发什么信息啊(╬▔皿▔)凸',
+					friend: `${name}已经把你删了(ˉ▽ˉ；)...`,
+					annoyed: `${name}已将你拉入了黑名单╮(╯▽╰)╭`
+				}
+				return errTipText[tip]
 			}
 		}
 	},

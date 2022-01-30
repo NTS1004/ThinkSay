@@ -2,6 +2,7 @@
 import { funcPutInitInfo } from "@/api/info/index.js"
 import { funGetChatRecordList, funGetApplyRecordList } from "@/api/record"
 import { mapState, mapMutations, mapActions } from "vuex"
+import { pathToBase64, base64ToPath } from 'image-tools'
 import ws from "@/utils/request/webSocket.js"
 import { host } from "@/utils/config.js"
 
@@ -79,6 +80,24 @@ export default {
     async getChatRecordList() {
       try {
         const { data } = await funGetChatRecordList()
+		for (let i in data) {
+			const { record } = data[i]
+			for (let o = 0; o < record.length; o++) {
+				const { image_src = '' } = record[o]
+				let isBase64 = image_src.indexOf('base64') !== -1
+				if (image_src && isBase64) {
+					let image_source_path = await base64ToPath(image_src)
+					let [_, res] = await uni.compressImage({
+						src: image_source_path,
+						quality: 20
+					})
+					const { tempFilePath } = res
+					record[o].image_src = await pathToBase64(tempFilePath)
+					record[o].image_source_path = image_source_path
+				}
+			}
+			data[i].record = record
+		}
         this.receive({ type: "chat", record: data })
       } catch (err) {
         console.log(err)

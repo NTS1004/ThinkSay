@@ -15,7 +15,9 @@
 							<u-avatar class="avatar" mode="square" size="86" :src="info.avatar"></u-avatar>
 							<view class="box">
 								<view v-if="item.send_error" class="iconfont icon-cloud-error" style="margin-right: 16rpx;" @tap="reSend(key, item, index)"></view>
-								<u-image v-if="item.image_src" :src="item.image_src" :width="`${item.image_width || 240}rpx`" :height="`${item.image_height || 240}rpx`" style="margin-right: 24rpx"></u-image>
+								<view v-if="item.image_src" :class="[{ image: item.image_src.indexOf('base64') !== -1 }]" style="margin-right: 24rpx;">
+									<u-image :src="item.image_src" :lazy-load="true" :width="`${item.image_width || 240}rpx`" :height="`${item.image_height || 240}rpx`" border-radius="8" @tap="previewImage(item)"></u-image>
+								</view>
 								<view v-else>
 									<view class="msg my-msg">
 										<view>{{ item.msg }}</view>
@@ -27,7 +29,9 @@
 						<view v-else-if="Number(item.key) !== Number(info.id) && item.key !== 'tip'" class="record friend-record">
 							<u-avatar class="avatar" mode="square" size="86" :src="friend_info.avatar"></u-avatar>
 							<view class="box">
-								<u-image v-if="item.image_src" :src="item.image_src" :width="`${item.image_width || 240}rpx`" :height="`${item.image_height || 240}rpx`" style="margin-left: 24rpx"></u-image>
+								<view v-if="item.image_src" :class="{image: item.image_src.indexOf('base64') !== -1}" style="margin-left: 24rpx;">
+									<u-image :src="item.image_src" :lazy-load="true" :width="`${item.image_width || 240}rpx`" :height="`${item.image_height || 240}rpx`" border-radius="8" @tap="previewImage(item)"></u-image>
+								</view>
 								<view v-else="item.msg">
 									<view class="msg friend-msg">
 										<view>{{ item.msg }}</view>
@@ -67,8 +71,9 @@
 </template>
 
 <script>
-import Header from '@/componets/Header/index.vue'
 import { mapState, mapMutations, mapActions } from 'vuex'
+import { pathToBase64, base64ToPath } from 'image-tools'
+import Header from '@/componets/Header/index.vue'
 import hander_charTime from '@/utils/hander_chatTime.js'
 
 export default {
@@ -103,7 +108,7 @@ export default {
 	computed: {
 		...mapState('App', ['statusBarHeight', 'network_status']),
 		...mapState('Info', ['info', 'friend_info']),
-		...mapState('Record', ['friend_chat_record', 'last_chat_time', 'update_chat_time', 'last_page', 'last_index']),
+		...mapState('Record', ['friend_chat_record', 'last_chat_time', 'update_chat_time', 'last_page', 'last_index', 'previewImages']),
 		headerHeight() {
 			return this.statusBarHeight + uni.upx2px(95)
 		},
@@ -131,9 +136,7 @@ export default {
 				friendId
 			}).then(() => {
 				this.$nextTick(() => {
-					setTimeout(() => {
-						this.scrollToBottom()
-					}, 160)
+					this.scrollToBottom()
 				})
 			})
 		}
@@ -148,14 +151,14 @@ export default {
 	},
 	methods: {
 		...mapMutations('Info', ['setInfoType', 'setFriendInfo', 'initFriendChat', 'setChatFriendId']),
-		...mapMutations('Record', ['handerFriendChatRecord', 'saveFriendChatRecord', 'defaultFriendChatRecord', 'clearBadgeCount', 'clearFriendChatRecord']),
+		...mapMutations('Record', ['handerFriendChatRecord', 'saveFriendChatRecord', 'defaultFriendChatRecord', 'clearBadgeCount', 'clearFriendChatRecord', 'deleteOneFriendChatRecord']),
 		...mapActions('Record', ['getFriendChatRecordList']),
 		hander_charTime,
-		async send({ message, image_src, image_width, image_height }) {
+		async send({ msg, image_src, image_width, image_height, image_source, image_source_path }) {
 			let { friendId, params, info, last_chat_time, update_chat_time, friend_info, network_status } = this
-			const { msg } = params
+			msg = msg || params.msg
 			const { friend, annoyed } = friend_info
-			if (!msg && !message && typeof image_src !== 'string') return
+			if (!msg && !image_src) return
 			params.chatTime = this.$moment().format('YYYY-MM-DD HH:mm:ss')
 			let overtime = this.$moment() > this.$moment(update_chat_time || params.chatTime).add(5, 'minute')
 			if (!last_chat_time || overtime) {
@@ -165,14 +168,16 @@ export default {
 			let record = Object.assign(
 				{
 					key: `${info.id}`,
-					chatTime: params.chatTime
+					chatTime: params.chatTime,
+					image_source,
+					image_source_path
 				},
-				typeof image_src === 'string'
+				image_src
 					? {
 							image_src,
 							image_width,
 							image_height,
-							msg: '[表情]'
+							msg:  image_src.indexOf('base64') !== -1 ? '[图片]' :'[表情]'
 					  }
 					: {
 							msg: msg || message
@@ -216,11 +221,14 @@ export default {
 				this.handerFriendChatRecord(errTipData)
 			}
 			this.params = {}
-			this.scrollToBottom()
+			this.$nextTick(() => {
+				this.scrollToBottom()
+			})
 		},
-		reSend() {
-			this.send()
-			this.scrollToBottom()
+		reSend(key, record, index) {
+			this.deleteOneFriendChatRecord({key, index})
+			this.send(record)
+			// this.scrollToBottom()
 		},
 		selectConnect() {
 			this.$u.route({
@@ -233,9 +241,59 @@ export default {
 				files.forEach(item => {
 					uni.getImageInfo({
 						src: item,
-						success: ({ width, height, type, path }) => {
-							console.log(width)
-							console.log(height)
+						success: async ({ width, height, type, path }) => {
+							let image_width
+							let image_height
+							if (width > height) {
+								if (Math.floor(width / 320) > 2) {
+									image_width = 320
+								} else {
+									image_width = 300
+								}
+								if (Math.floor(width / image_width) > 1) {
+									image_height = height / Math.floor(width / image_width)
+								} else {
+									image_height = height - (width - image_width)
+								}
+							} else if (height > width) {
+								if (height >= 2400) {
+								    image_height = 335
+								} else if (height >= 1920) {
+									image_height = 320
+								} else {
+									image_height = 300
+								}
+								if (Math.floor(height / image_height) > 1) {
+									image_width = width / Math.floor(height / image_height)
+								} else {
+									image_width = width - (height - image_height)
+								}
+							} else if (width === height) {
+								image_width = 260
+								image_height = 260
+							}
+							let image_src
+							let image_source
+							let image_source_path
+							if (type === 'jpeg') {
+							    let [_, res] = await uni.compressImage({
+									src: path,
+									quality: 20
+								})
+								const { tempFilePath } = res
+								image_src = await pathToBase64(tempFilePath)
+								image_source = await pathToBase64(path)
+								image_source_path = await base64ToPath(image_source)
+							} else {
+								image_src = await pathToBase64(path)
+							}
+							this.send({
+								image_src,
+								image_width,
+								image_height,
+								image_source,
+								image_source_path
+							})
 						}
 					})
 				})
@@ -309,6 +367,22 @@ export default {
 						}
 					})
 				}
+			}
+		},
+		previewImage(record) {
+			const { image_src, image_source_path, chatTime } = record
+			let previewImages = Array.from(this.previewImages.values())
+			let ImagesKeys = Array.from(this.previewImages.keys())
+			let current = ImagesKeys.indexOf(chatTime)
+			let previewImage = image_source_path || image_src
+			let isGif = previewImage.indexOf('.gif') !== -1
+			if (isGif) {
+				
+			} else {
+				uni.previewImage({
+					current,
+					urls: previewImages
+				})
 			}
 		},
 		toBack() {

@@ -46,9 +46,10 @@ routers.get("chat/:id/list", async (ctx) => {
   }
 })
 
-routers.get("chat/:friendId/save", async (ctx) => {
+routers.post("chat/:friendId/save", async (ctx) => {
   let { friendId } = ctx.params
-  let { key, msg = "", chatTime, image_src = "", image_width = "", image_height = "", tips = [] } = ctx.query
+  let { key, msg = "", chatTime, image_src = "", image_width = "", image_height = "", tips = [], image_source } = ctx.request.body
+  if (image_source) image_src = image_source
   try {
     await ctx.db.execute(
       `INSERT INTO think_record (userId, friendId, msg, chatTime, image_src, image_width, image_height, tips, status ) VALUES (${key}, ${friendId}, "${msg}", "${chatTime}", "${image_src}", "${image_width}", "${image_height}", "${tips.join(
