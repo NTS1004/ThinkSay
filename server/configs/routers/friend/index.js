@@ -125,11 +125,9 @@ routers.put("apply", async (ctx) => {
         chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
       }
       if (!global.user[friendId]?.channel) {
-        await ctx.axios.get(`http://localhost:1437/record/chat/${friendId}/save`, {
-          params: {
-            key: id,
-            ...record
-          }
+        await ctx.axios.post(`http://localhost:1437/record/chat/${friendId}/save`, {
+          key: id,
+          ...record
         })
       } else {
         global.user[friendId].channel.push({
@@ -198,11 +196,9 @@ routers.put("accept", async (ctx) => {
         }
       })
     } else {
-      await ctx.axios.get(`http://localhost:1437/record/chat/${friendId}/save`, {
-        params: {
-          key: id,
-          ...record
-        }
+      await ctx.axios.post(`http://localhost:1437/record/chat/${friendId}/save`, {
+        key: id,
+        ...record
       })
     }
     global.user[id].channel.push({
