@@ -214,7 +214,7 @@ export default {
 					last_chat_time,
 					record: {
 						key: 'tip',
-						tip,
+						tip: this.ErrTipText(tip),
 						chatTime: this.$moment().format('YYYY-MM-DD HH:mm:ss')
 					}
 				}
@@ -227,7 +227,9 @@ export default {
 		},
 		reSend(key, record, index) {
 			this.deleteOneFriendChatRecord({key, index})
-			this.send(record)
+			setTimeout(() => {
+				this.send(record)
+			}, 200)
 			// this.scrollToBottom()
 		},
 		selectConnect() {
