@@ -10,12 +10,12 @@
 			<view class="option-box">
 				<view class="option">
 					<span>信息免打扰</span>
-					<u-switch v-model="quiet" size="40" @change="v => settingQuiet('quiet', v)"></u-switch>
+					<u-switch v-model="quiet" size="40" @change="v => settingQuiet('quiet', v)" activeColor="#52acff"></u-switch>
 				</view>
 				<u-line type="info" />
 				<view class="option">
 					<span>加入黑名单</span>
-					<u-switch :value="annoyed" size="40" @change="v => settingAnnoyed('annoyed', v)"></u-switch>
+					<u-switch :value="annoyed" size="40" @change="v => settingAnnoyed('annoyed', v)" activeColor="#52acff"></u-switch>
 				</view>
 				<u-line type="info" />
 			</view>

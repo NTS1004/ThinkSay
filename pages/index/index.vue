@@ -36,7 +36,7 @@
 		</swiper>
 		<u-action-sheet :list="list" v-model="show" @click="ctrlOut"></u-action-sheet>
 		<u-action-sheet :list="tabList" v-model="tabShow" @click="ctrlInfo"></u-action-sheet>
-		<u-modal ref="uModal" v-model="modalShow" title="修改昵称" confirm-text="修改" :show-cancel-button="true" :async-close="true" @confirm="putMyInfo" @cancel="cancel">
+		<u-modal ref="uModal" v-model="modalShow" title="修改昵称" confirm-text="修改" confirmColor="#52acff" :show-cancel-button="true" :async-close="true" @confirm="putMyInfo" @cancel="cancel">
 			<view class="slot-content"><input class="input" v-model="params.name" type="text" placeholder="请输入昵称" placeholder-class="input-placeholder" :focus="modalShow" /></view>
 		</u-modal>
 	</view>
