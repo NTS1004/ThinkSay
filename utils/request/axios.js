@@ -54,16 +54,16 @@ axios.interceptors.response.use(
 					content
 				} = message
 				if (title) {
-					Modal({
-						title,
-						content
-					})
+					// Modal({
+					// 	title,
+					// 	content
+					// })
 				} else {
-					Toast(content)
+					// Toast(content)
 				}
 			} else {
 				if (message) {
-					Toast(message)
+					// Toast(message)
 				}
 			}
 		}

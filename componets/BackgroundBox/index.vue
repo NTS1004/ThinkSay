@@ -41,12 +41,14 @@ export default {
 	height: 100%;
 	z-index: -1;
 	overflow: hidden;
+	// border: 1px solid;
 	.background {
 		width: 100%;
 		height: 100vh;
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
+		// margin-top: 100px;
 	}
 	.cover-height {
 		height: 100%;

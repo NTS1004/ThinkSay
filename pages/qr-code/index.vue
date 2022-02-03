@@ -34,13 +34,8 @@ export default {
 			if (!background) {
 				return ""
 			}
-			let backgroundImage
-			const { url, position } = background
-			if (position) {
-				backgroundImage = `background-image: url(${url}); background-position: ${position}`
-			} else {
-				backgroundImage = `background-image: url(${url});`
-			}
+			const { url } = background
+			let backgroundImage = `background-image: url(${url})`
 			return `${backgroundImage}`
 		}
 	},

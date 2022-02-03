@@ -9,7 +9,7 @@
 						v-for="(item, index) in background"
 						:key="index"
 						:class="['background-item', index === background.length - 1 ? 'bottom-none' : '']"
-						:style="itemInfo({ url: item.url, position: item.position })"
+						:style="itemInfo({ url: item.url })"
 						@tap="goSetBackground(item)"
 					>
 						<view class="select-active" v-if="item.url === info.background.url"><u-icon name="checkbox-mark" class="icon"></u-icon></view>

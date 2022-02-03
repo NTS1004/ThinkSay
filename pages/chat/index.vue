@@ -152,6 +152,7 @@ export default {
 	methods: {
 		...mapMutations('Info', ['setInfoType', 'setFriendInfo', 'initFriendChat', 'setChatFriendId']),
 		...mapMutations('Record', ['handerFriendChatRecord', 'saveFriendChatRecord', 'defaultFriendChatRecord', 'clearBadgeCount', 'clearFriendChatRecord', 'deleteOneFriendChatRecord']),
+		...mapMutations('Rtc', ['setState']),
 		...mapActions('Record', ['getFriendChatRecordList']),
 		hander_charTime,
 		async send({ msg, image_src, image_width, image_height, image_source, image_source_path }) {
@@ -230,9 +231,13 @@ export default {
 			setTimeout(() => {
 				this.send(record)
 			}, 200)
-			// this.scrollToBottom()
 		},
-		selectConnect() {
+		selectConnect(index) {
+			this.setState({
+				rtc_type: index ? 'video' : 'voice',
+			    rtc_status: 'send',
+				rtc_info: this.friend_info
+			})
 			this.$u.route({
 				url: '/pages/rtc/index',
 				animationType: 'zoom-fade-out'

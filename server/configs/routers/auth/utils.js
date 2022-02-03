@@ -1,47 +1,36 @@
 const background = [
   {
-    url: "https://www.cjh1004.vip/ThinkSay/1.jpg!upyun520/fw/1500",
-    position: "bottom"
+    url: "https://www.cjh1004.vip/ThinkSay/1.jpg!upyun520/fw/1500"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/2.jpg!upyun520/fw/1500",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/2.jpg!upyun520/fw/1500"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/3.jpg!upyun520/fw/1500",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/3.jpg!upyun520/fw/1500"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/4.jpg",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/4.jpg"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/6.jpg",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/6.jpg"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/7.jpg",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/7.jpg"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/8.jpg",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/8.jpg"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/11.jpg",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/11.jpg"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/12.jpg",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/12.jpg"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/9.jpg!upyun520/fw/1500",
-    position: "center"
+    url: "https://www.cjh1004.vip/ThinkSay/9.jpg!upyun520/fw/1500"
   },
   {
-    url: "https://www.cjh1004.vip/ThinkSay/10.jpg",
-    position: "bottom"
+    url: "https://www.cjh1004.vip/ThinkSay/10.jpg"
   }
 ]
 
