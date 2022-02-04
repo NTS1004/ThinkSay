@@ -1,7 +1,6 @@
 .rtc {
 	width: 100vw;
 	height: 100vh;
-	// background: #434343;
 	color: #ffffff;
 	background-size: 150%;
 	background-repeat: no-repeat;
@@ -42,25 +41,128 @@
 	z-index: 20;
 }
 
-.uIcon {
-	margin: 0 30rpx;
-	color: #ffffff;
-	text-shadow: 0px 0px 2px #434343, 0px 0px 20px #ffffff;
-}
-
 .friend {
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
 	align-items: center;
-	margin-top: 100rpx;
-	.avatar {
-		box-shadow: 0px 1px 1px #c8c8c8;
-	}
+	margin-top: 140rpx;
 	.name {
 		font-family: 'Permanent Marker';
 		color: #FFFFFF;
-		margin-top: 18rpx;
+		margin-top: 20rpx;
 		text-shadow: 0px 0px 2px #434343, 0px 0px 20px #ffffff;
+	}
+}
+
+.ctrl {
+	position: fixed;
+	bottom: 160rpx;
+	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
+	.ctrl-box {
+		width: 142rpx;
+		height: 142rpx;
+		border-radius: 50%;
+		position: relative;
+		display: flex;
+		justify-content: center;
+		.ctrl-item {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: #434343;
+			.speaker {
+				position: relative;
+				.icon-speaker {
+					font-size: 64rpx;
+				}
+				.icon-right {
+					position: absolute;
+					right: -18rpx;
+					top: -2px;
+					font-size: 70rpx;
+				}
+				.one-floor {
+					font-size: 48rpx;
+					right: -4rpx;
+					top: 6rpx;
+				}
+			}
+			.icon-close-speaker {
+				font-size: 70rpx;
+				margin-left: 10rpx;
+			}
+		}
+		.switch-voice-box {
+			position: absolute;
+			top: -270rpx;
+		}
+		.switch-voice {
+			background: rgba(0, 0, 0, .2);
+			.speak {
+				display: flex;
+				position: relative;
+				align-items: center;
+				margin-left: -46rpx;
+				margin-top: 4rpx;
+				.icon-to {
+					font-size: 44rpx;
+				}
+				.icon-speak {
+					font-size: 60rpx;
+					position: absolute;
+					left: 34rpx;
+					bottom: -2.6px;
+				}
+			}
+		}
+		.switch-camera {
+			background: rgba(0, 0, 0, .2);
+			.icon-switch-camera {
+				font-size: 72rpx;
+			}
+		}
+		.hover_switch {
+			background: rgba(0, 0, 0, .3);
+		}
+		.active {
+			background: #FFFFFF;
+			color: #434343;
+			box-shadow: '0px 0px 2px #434343'
+		}
+		.hang {
+			margin-top: 14rpx;
+			font-size: 76rpx;
+			font-weight: 500;
+		}
+		.video {
+			font-size: 74rpx;
+			margin-left: 6rpx;
+			margin-top: 8rpx;
+		}
+		.voice {
+			font-size: 76rpx;
+		}
+		.ctrl-text {
+			position: absolute;
+			white-space: nowrap;
+			bottom: -50rpx;
+			font-size: 26rpx;
+			// text-shadow: 0px 0px 2px #434343, 0px 0px 20px #ffffff;
+		}
+		.uIcon {
+			font-size: 66rpx;
+		}
+	}
+	.ctrl-box-marginLeft {
+		margin-left: 18rpx;
+	}
+	.ctrl-box-marginRight {
+		margin-right: 18rpx;
 	}
 }

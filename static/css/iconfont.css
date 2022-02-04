@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2351955 */
-  src: url('iconfont.woff2?t=1643897394900') format('woff2'),
-       url('iconfont.woff?t=1643897394900') format('woff'),
-       url('iconfont.ttf?t=1643897394900') format('truetype');
+  src: url('iconfont.woff2?t=1643986527675') format('woff2'),
+       url('iconfont.woff?t=1643986527675') format('woff'),
+       url('iconfont.ttf?t=1643986527675') format('truetype');
 }
 
 .iconfont {
@@ -13,11 +13,51 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-shouye:before {
+.icon-right:before {
+  content: "\eca6";
+}
+
+.icon-switch-camera:before {
+  content: "\e680";
+}
+
+.icon-to:before {
+  content: "\e615";
+}
+
+.icon-close-vedio:before {
+  content: "\eca5";
+}
+
+.icon-video:before {
+  content: "\e605";
+}
+
+.icon-speak:before {
+  content: "\e630";
+}
+
+.icon-close-microphone:before {
+  content: "\e899";
+}
+
+.icon-microphone:before {
+  content: "\e8b2";
+}
+
+.icon-close-speaker:before {
+  content: "\e620";
+}
+
+.icon-speaker:before {
+  content: "\e62a";
+}
+
+.icon-hang:before {
   content: "\e637";
 }
 
-.icon-dianhua:before {
+.icon-voice:before {
   content: "\e66e";
 }
 
