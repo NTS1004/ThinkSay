@@ -179,9 +179,11 @@ export default {
     },
     tapCtrl(func, mode) {
       if (mode) {
-        this.setState({
-          [mode]: !this[mode]
-        })
+        this.setState([
+          {
+            [mode]: !this[mode]
+          }
+        ])
       }
     },
     ctrlMicroPhone() {},

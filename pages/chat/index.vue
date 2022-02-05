@@ -63,8 +63,7 @@
                     :height="`${item.image_height || 240}rpx`"
                     border-radius="8"
                     @tap="previewImage(item)"
-                  >
-                  </u-image>
+                  ></u-image>
                 </view>
                 <view v-else>
                   <view class="msg friend-msg">
@@ -99,8 +98,7 @@
           :clearable="false"
           @linechange="linechange"
           @input="handerMsg"
-        >
-        </u-input>
+        ></u-input>
         <view class="record_bottom" id="textScrollBottom"></view>
       </scroll-view>
       <view class="iconfont icon-fuwenbenbianjiqi_tupian uIcon" style="font-size: 44rpx" @tap="selectImage"></view>
@@ -108,8 +106,7 @@
         :class="['iconfont', 'icon-fasong', 'uIcon', params.msg ? 'status' : '']"
         style="margin: 0 24rpx 0 26rpx"
         @tap="send"
-      >
-      </view>
+      ></view>
     </view>
     <u-action-sheet :list="list" v-model="show" @click="selectConnect"></u-action-sheet>
   </view>
@@ -297,19 +294,24 @@ export default {
     },
     // 发起语音通话或视频聊天
     selectConnect(index) {
-      this.setState({
+      let data = {
         rtc_type: index ? "video" : "voice",
         rtc_status: "send",
         rtc_info: this.friend_info
-      })
-      // getApp().ws.emit({
-      //   type: this.rtc_type,
-      //   friendId: this.friendId
-      // })
-      this.$u.route({
-        url: "/pages/rtc/index",
-        animationType: "zoom-fade-out"
-      })
+      }
+      this.setState([
+        data,
+        ({ rtc_type }) => {
+          getApp().ws.emit({
+            type: rtc_type,
+            friendId: this.friendId
+          })
+          this.$u.route({
+            url: "/pages/rtc/index",
+            animationType: "zoom-fade-out"
+          })
+        }
+      ])
     },
     // 选择本地图片，并发送
     selectImage() {
