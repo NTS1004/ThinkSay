@@ -34,8 +34,8 @@ export default {
       state.friend_data = friend_data
     },
     updateFriendData(state, { current_initials, next_initials, info }) {
-	  const { id: myId } = this.state.Info.info
-	  let user_record = uni.getStorageSync(`user-record-${myId}`) || {}
+      const { id: myId } = this.state.Info.info
+      let user_record = uni.getStorageSync(`user-record-${myId}`) || {}
       let friend_data = state.friend_data
       let friend_initials_list = friend_data[current_initials]
       for (let i = 0; i < friend_initials_list.length; i++) {
@@ -49,26 +49,24 @@ export default {
       if (!friend_data[next_initials]) friend_data[next_initials] = []
       friend_data[next_initials].push(info)
       state.friend_data = Object.assign({}, friend_data)
-	  user_record.friend_data = friend_data
-	  uni.setStorageSync(`user-record-${myId}`, user_record)
+      user_record.friend_data = friend_data
+      uni.setStorageSync(`user-record-${myId}`, user_record)
     },
-	getRecordFriendList(state, data = {}) {
-		if (Object.keys(data).length == 0) {
-			const {
-				id: myId
-			} = this.state.Info.info
-			data = uni.getStorageSync(`user-record-${myId}`)
-		}
-		const { friend_data = {} } = data
-		state.friend_data = friend_data
-	}
+    getRecordFriendList(state, data = {}) {
+      if (Object.keys(data).length == 0) {
+        const { id: myId } = this.state.Info.info
+        data = uni.getStorageSync(`user-record-${myId}`)
+      }
+      const { friend_data = {} } = data
+      state.friend_data = friend_data
+    }
   },
   actions: {
     async getFriendList({ commit }) {
       try {
         const { data } = await funcGetFriendList()
         const { id: myId } = this.state.Info.info
-		const { chat_friend_id } = this.state.Info
+        const { chat_friend_id } = this.state.Info
         let user_record = uni.getStorageSync(`user-record-${myId}`) || {}
         let friend_data = {}
         for (let i = 0; i < data.length; i++) {
@@ -83,12 +81,12 @@ export default {
             ...user_record[friendId].info,
             ...data[i]
           }
-		  if (Number(chat_friend_id) === Number(friendId)) {
-			 this.commit('Info/setFriendInfo', data[i])
-		  }
+          if (Number(chat_friend_id) === Number(friendId)) {
+            this.commit("Info/setFriendInfo", data[i])
+          }
           user_record[friendId].status = "friend"
         }
-		user_record.friend_data = friend_data
+        user_record.friend_data = friend_data
         this.commit("Record/hanlderFriendsRecordInfo", user_record)
         commit("setFriendData", friend_data)
         uni.setStorageSync(`user-record-${myId}`, user_record)

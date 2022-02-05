@@ -1,69 +1,69 @@
 .tab-box {
-	height: 500rpx;
-	background-image: url('https://www.cjh1004.vip/ThinkSay/13.jpg!upyun520/fw/1300');
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: top;
-	position: relative;
+  height: 500rpx;
+  background-image: url("https://www.cjh1004.vip/ThinkSay/13.jpg!upyun520/fw/1300");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+  position: relative;
 }
-.icon-box  {
-	display: flex;
+.icon-box {
+  display: flex;
 }
 .form-box {
-	margin: 50rpx 65rpx;
+  margin: 50rpx 65rpx;
 }
 .form-input {
-	border-bottom: .3px solid #EBEBEB;
-	height: 78rpx;
-	margin-bottom: 35rpx;
-	color: #434343;
-	text-align: center;
-	font-family: 'Permanent Marker';
+  border-bottom: 0.3px solid #ebebeb;
+  height: 78rpx;
+  margin-bottom: 35rpx;
+  color: #434343;
+  text-align: center;
+  font-family: "Permanent Marker";
 }
 .form-input-placeholder {
-	color: #999;
-	font-weight: 300;
-	font-size: 31rpx;
-	font-family: none;
+  color: #999;
+  font-weight: 300;
+  font-size: 31rpx;
+  font-family: none;
 }
 .form-btn {
-	margin-top: 70rpx;
-	border: none;
-	color: #FFFFFF;
+  margin-top: 70rpx;
+  border: none;
+  color: #ffffff;
 }
 
 .iconBox {
-	display: flex;
-	justify-content: flex-end;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .uIcon {
-	margin: 0 30rpx;
-	color: #FFFFFF;
-	font-size: 45rpx;
-	margin-top: 30rpx;
+  margin: 0 30rpx;
+  color: #ffffff;
+  font-size: 45rpx;
+  margin-top: 30rpx;
 }
 
 .title {
-	position: absolute;
-	color: #FFFFFF;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 68rpx;
-	font-family: 'Permanent Marker';
+  position: absolute;
+  color: #ffffff;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 68rpx;
+  font-family: "Permanent Marker";
 }
 
 #bg-svg {
-	position: absolute;
-	bottom: -205rpx;
-	width: 100%;
+  position: absolute;
+  bottom: -205rpx;
+  width: 100%;
 }
 
 .box {
-	width: 100rpx;
-	height: 100rpx;
-	position: fixed;
-	z-index: 999;
-	background: #434343;
+  width: 100rpx;
+  height: 100rpx;
+  position: fixed;
+  z-index: 999;
+  background: #434343;
 }
