@@ -302,10 +302,10 @@ export default {
       this.setState([
         data,
         ({ rtc_type }) => {
-          getApp().ws.emit({
-            type: rtc_type,
-            friendId: this.friendId
-          })
+          // getApp().ws.emit({
+          //   type: rtc_type,
+          //   friendId: this.friendId
+          // })
           this.$u.route({
             url: "/pages/rtc/index",
             animationType: "zoom-fade-out"

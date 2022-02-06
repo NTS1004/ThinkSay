@@ -2,7 +2,7 @@
 import { funcPutInitInfo } from "@/api/info/index.js"
 import { funGetChatRecordList, funGetApplyRecordList } from "@/api/record"
 import { mapState, mapMutations, mapActions } from "vuex"
-import { pathToBase64, base64ToPath } from 'image-tools'
+import { pathToBase64, base64ToPath } from "image-tools"
 import ws from "@/utils/request/webSocket.js"
 import { host } from "@/utils/config.js"
 
@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     ...mapState("App", ["lastPage"]),
-	...mapState("Info", ['info'])
+    ...mapState("Info", ["info"])
   },
   onLaunch() {
     uni.getSystemInfo({
@@ -53,13 +53,14 @@ export default {
       "setFriendsRecordInfo",
       "updateFriendInfo",
       "handlerChatRecordList",
-	  "handlerErrorChatRecord"
+      "handlerErrorChatRecord"
     ]),
+    ...mapMutations("Rtc", ["setState"]),
     ...mapActions("App", ["getFriendList"]),
     ...mapActions("Record", ["handlerFriendsChatRecord"]),
     init(id, info) {
       this.id = id
-	  this.setInfo(info)
+      this.setInfo(info)
       this.connectWebSocket(id)
       let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
       this.setFriendsRecordInfo(friend_record_info)
@@ -69,35 +70,35 @@ export default {
       this.getChatRecordList()
       this.getApplyRecordList(user_record)
     },
-	async putInitInfo() {
-		let handlerInfo = this.deleteObjactKey(this.info, ['friends', 'token', 'quiet', 'annoyed'])
-		try {
-			await funcPutInitInfo({ info: handlerInfo })
-		} catch (err) {
-			console.log(err)
-		}
-	},
+    async putInitInfo() {
+      let handlerInfo = this.deleteObjactKey(this.info, ["friends", "token", "quiet", "annoyed"])
+      try {
+        await funcPutInitInfo({ info: handlerInfo })
+      } catch (err) {
+        console.log(err)
+      }
+    },
     async getChatRecordList() {
       try {
         const { data } = await funGetChatRecordList()
-		for (let i in data) {
-			const { record } = data[i]
-			for (let o = 0; o < record.length; o++) {
-				const { image_src = '' } = record[o]
-				let isBase64 = image_src.indexOf('base64') !== -1
-				if (image_src && isBase64) {
-					let image_source_path = await base64ToPath(image_src)
-					let [_, res] = await uni.compressImage({
-						src: image_source_path,
-						quality: 20
-					})
-					const { tempFilePath } = res
-					record[o].image_src = await pathToBase64(tempFilePath)
-					record[o].image_source_path = image_source_path
-				}
-			}
-			data[i].record = record
-		}
+        for (let i in data) {
+          const { record } = data[i]
+          for (let o = 0; o < record.length; o++) {
+            const { image_src = "" } = record[o]
+            let isBase64 = image_src.indexOf("base64") !== -1
+            if (image_src && isBase64) {
+              let image_source_path = await base64ToPath(image_src)
+              let [_, res] = await uni.compressImage({
+                src: image_source_path,
+                quality: 20
+              })
+              const { tempFilePath } = res
+              record[o].image_src = await pathToBase64(tempFilePath)
+              record[o].image_source_path = image_source_path
+            }
+          }
+          data[i].record = record
+        }
         this.receive({ type: "chat", record: data })
       } catch (err) {
         console.log(err)
@@ -114,18 +115,39 @@ export default {
     connectWebSocket(id) {
       this.ws = new ws(`ws://${host}?id=${id}`, this.receive)
     },
-	deleteObjactKey(data, keys) {
-		let json = {}
-		for (let i in data) {
-			if (keys.indexOf(i) === -1) {
-				json[i] = data[i]
-			}
-		}
-		return json
-	},
+    deleteObjactKey(data, keys) {
+      let json = {}
+      for (let i in data) {
+        if (keys.indexOf(i) === -1) {
+          json[i] = data[i]
+        }
+      }
+      return json
+    },
     receive(data) {
       const { type, friendId, info, record, apply_list, extend_error } = data
       switch (type) {
+        case "chat":
+          this.handlerFriendsChatRecord(record)
+          break
+        case ["voice", "video"].includes(type):
+          this.setState([
+            {
+              rtc_type: type,
+              rtc_status: "receive",
+              rtc_info: info
+            },
+            () => {
+              this.$u.route({
+                url: "/pages/rtc/index",
+                animationType: "zoom-fade-out"
+              })
+            }
+          ])
+          break
+        case "chat-error":
+          this.handlerErrorChatRecord({ friendId, record, extend_error })
+          break
         case "apply":
           if (!apply_list) apply_list = [{ userId: friendId, info }]
           let user_record = uni.getStorageSync(`user-record-${this.id}`) || {}
@@ -141,12 +163,6 @@ export default {
           }
           this.handlerNewFriendsRecord(user_record)
           break
-        case "chat":
-          this.handlerFriendsChatRecord(record)
-          break
-		case "chat-error":
-		  this.handlerErrorChatRecord({ friendId, record, extend_error })
-		  break
         case "update":
           this.updateFriendInfo({ friendId, info })
           break

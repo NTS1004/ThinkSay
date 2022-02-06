@@ -6,6 +6,15 @@
   background-repeat: no-repeat;
 }
 
+.head {
+  transition: 0.5s all;
+}
+
+.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .title-box {
   display: flex;
   justify-content: center;
@@ -70,6 +79,7 @@
   width: 100%;
   display: flex;
   justify-content: space-evenly;
+  transition: 0.5s all;
   .ctrl-box {
     width: 142rpx;
     height: 142rpx;

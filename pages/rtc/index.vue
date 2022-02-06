@@ -1,6 +1,12 @@
 <template>
-  <view class="rtc" :style="background">
-    <Header left-icon="icon-suoxiao" :header-style="headerStyle" :title-style="titleStyle" @back="windowing">
+  <view class="rtc" :style="background" @tap.stop="tapScreen">
+    <Header
+      :class="['head', show ? '' : 'hide']"
+      left-icon="icon-suoxiao"
+      :header-style="headerStyle"
+      :title-style="titleStyle"
+      @back="windowing"
+    >
       <view slot="title">
         <view class="title-box" style="position: relative">
           <view class="box">
@@ -10,11 +16,11 @@
         </view>
       </view>
     </Header>
-    <view class="friend" v-if="rtc_type === 'voice'">
+    <view class="friend" v-if="showFriendInfo">
       <u-avatar class="avatar" mode="square" size="165" :src="rtc_info.avatar"></u-avatar>
       <view class="name">{{ rtc_info.name }}</view>
     </view>
-    <view class="ctrl">
+    <view :class="['ctrl', show ? '' : 'hide']">
       <view v-for="(item, index) in ctrlList" :key="index" :class="['ctrl-box', margin(index)]">
         <view
           v-if="item.type === 'speaker'"
@@ -33,6 +39,7 @@
           hover-class="hover_switch"
           hover-start-time="100"
           hover-stay-time="150"
+          @tap.stop=""
         >
           <view class="speak" v-if="item.type === 'switch-voice' || item.extend === 'switch-voice'">
             <view class="iconfont icon-to"></view>
@@ -46,7 +53,7 @@
         <view
           v-else-if="!['voice', 'video', 'hang'].includes(item.type)"
           :class="['ctrl-item', isActive(item.mode)]"
-          @tap="tapCtrl(item.func, item.mode)"
+          @tap.stop="tapCtrl(item.func, item.mode)"
         >
           <view :class="['iconfont', `icon-${item.type}`, 'uIcon']"></view>
         </view>
@@ -92,7 +99,8 @@ export default {
         width: "100%",
         height: "100%",
         borderRadius: "50%"
-      }
+      },
+      show: true
     }
   },
   computed: {
@@ -142,7 +150,6 @@ export default {
           ctrl_list = [switch_voice, hang, switch_camera]
         }
       }
-      console.log(ctrl_list)
       return ctrl_list
     },
     isActive() {
@@ -168,6 +175,10 @@ export default {
         const { rtc_type, rtc_status } = this
         return rtc_type === "video" && rtc_status === "receive" && index
       }
+    },
+    showFriendInfo() {
+      const { rtc_type, rtc_status } = this
+      return rtc_type === "voice" || rtc_status !== "connected"
     }
   },
   methods: {
@@ -176,6 +187,12 @@ export default {
       this.$u.route({
         type: "navigateBack"
       })
+    },
+    tapScreen() {
+      const { rtc_type, rtc_status } = this
+      if (rtc_type === "video" && rtc_status === "connected") {
+        this.show = !this.show
+      }
     },
     tapCtrl(func, mode) {
       if (mode) {
