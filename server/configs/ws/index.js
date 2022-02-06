@@ -57,11 +57,22 @@ module.exports = (wss) => {
               type: "chat-error",
               friendId,
               record: {
-                key: 'tip',
+                key: "tip",
                 tip: send_err,
                 chatTime: record.chatTime
               },
               extend_error
+            })
+          )
+        }
+      }
+      if (["voice", "video"].includes(type)) {
+        const { ws: friend_ws } = global.user[friendId]
+        if (global.user[friendId]?.channel) {
+          friend_ws.send(
+            JSON.stringify({
+              type,
+              info: global.user[id].info
             })
           )
         }
