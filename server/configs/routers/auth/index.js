@@ -3,7 +3,7 @@ const routers = new router()
 const { pinyin: PinYin } = require("pinyin-pro")
 const jwt = require("jsonwebtoken")
 const secret = "No_Think_Say"
-const backgroundArray = require("./utils")
+const backgroundList = require("./utils/background")
 
 let field = `id, account, password, name, avatar, background, initials, pinyin, friends, quiet, annoyed`
 
@@ -30,7 +30,7 @@ routers.get("login", async (ctx) => {
       } else {
         let info = data[0]
         info.background = JSON.parse(info.background)
-        info.quiet = info.quiet ? info.quiet.split(',') : []
+        info.quiet = info.quiet ? info.quiet.split(",") : []
         delete info.password
         const payload = {
           id: info.id
@@ -71,12 +71,9 @@ routers.get("register", async (ctx) => {
       } else {
         let num = parseInt(Math.random() * 22)
         let avatar = "https://www.cjh1004.vip/user/" + num + ".jpg"
-        let background_type = parseInt(Math.random() * 2)
-        let background_data = backgroundArray[background_type]
-        let background_data_len = background_data.length
+        let background_url = backgroundList[parseInt(Math.random() * backgroundList.length)]
         let background = {
-          ...background_data[parseInt(Math.random() * background_data_len)],
-          top: 0
+          background: background_url
         }
         background = JSON.stringify(background)
         let initials = PinYin(name, {
@@ -92,6 +89,7 @@ routers.get("register", async (ctx) => {
         ctx.body = ctx.echo("success", "注册成功")
       }
     } catch (err) {
+      console.log(err)
       ctx.body = ctx.echo("error", {
         title: "注册失败",
         content: "服务器出错"

@@ -22,11 +22,15 @@ export default {
   },
   computed: {
     background() {
+	  let { url, top } = this
+	  // let infoBoxHeightPx = uni.upx2px(579)
+	  // let surplusHeight = 900 - top
+	  // top = infoBoxHeightPx > surplusHeight ? top - (infoBoxHeightPx - surplusHeight) : top
       let background
-      if (this.top && typeof this.top === "number") {
-        background = `background-image: url(${this.url}); transform: translateY(-${this.top}px)`
+      if (typeof top === "number") {
+        background = `background-image: url(${url}); transform: translateY(-${top}px)`
       } else {
-        background = `background-image: url(${this.url})`
+        background = `background-image: url(${url})`
       }
       return background
     }
@@ -41,14 +45,13 @@ export default {
   height: 100%;
   z-index: -1;
   overflow: hidden;
-  // border: 1px solid;
   .background {
     width: 100%;
     height: 100vh;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    // margin-top: 100px;
+	transition: .3s all;
   }
   .cover-height {
     height: 100%;

@@ -8,7 +8,7 @@ export default {
     statusBarHeight: 0,
     lastPage: true,
     isBackground: false,
-    infoBoxHeight: 530
+    infoBoxHeight: 540
   },
   mutations: {
     setNetworkStatus(state, bool) {
