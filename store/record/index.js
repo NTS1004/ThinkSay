@@ -59,7 +59,7 @@ export default {
       uni.setStorageSync(`user-record-${myId}`, user_record)
     },
     // 处理发送的消息，展示在列表
-    handerFriendChatRecord(state, { last_chat_time, record }) {
+    handlerFriendChatRecord(state, { last_chat_time, record }) {
       const { previewImages } = state
       const { image_src, image_source_path, chatTime } = record
       let image = image_source_path || image_src || ""
@@ -125,7 +125,7 @@ export default {
       state.chat_record_list = filter_data
     },
     // 处理朋友的信息
-    hanlderFriendsRecordInfo(state, data) {
+    handlerFriendsRecordInfo(state, data) {
       const { id: myId } = this.state.Info.info
       let friends_record_info = {}
       for (let i in data) {
@@ -277,14 +277,14 @@ export default {
         user_record[i].new_chat_record = new_record
         if (chat_friend_id == i) {
           if (msg) {
-            commit("handerFriendChatRecord", {
+            commit("handlerFriendChatRecord", {
               last_chat_time,
               record: new_record
             })
           }
           if (tips.length > 0) {
             for (let c = 0; c < tips.length; c++) {
-              commit("handerFriendChatRecord", {
+              commit("handlerFriendChatRecord", {
                 last_chat_time,
                 record: Object.assign({
                   key: "tip",

@@ -64,7 +64,7 @@ export default {
       this.connectWebSocket(id)
       let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
       this.setFriendsRecordInfo(friend_record_info)
-      let user_record = uni.getStorageSync(`user-record-${this.id}`) || {}
+      let user_record = uni.getStorageSync(`user-record-${id}`) || {}
       this.handlerChatRecordList(user_record)
       this.getRecordFriendList(user_record)
       this.getChatRecordList()

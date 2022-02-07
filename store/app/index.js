@@ -87,7 +87,7 @@ export default {
           user_record[friendId].status = "friend"
         }
         user_record.friend_data = friend_data
-        this.commit("Record/hanlderFriendsRecordInfo", user_record)
+        this.commit("Record/handlerFriendsRecordInfo", user_record)
         commit("setFriendData", friend_data)
         uni.setStorageSync(`user-record-${myId}`, user_record)
       } catch (err) {

@@ -73,7 +73,7 @@ routers.get("register", async (ctx) => {
         let avatar = "https://www.cjh1004.vip/user/" + num + ".jpg"
         let background_url = backgroundList[parseInt(Math.random() * backgroundList.length)]
         let background = {
-          background: background_url
+          url: background_url
         }
         background = JSON.stringify(background)
         let initials = PinYin(name, {

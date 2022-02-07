@@ -8,8 +8,21 @@ export default {
     chat_friend_id: null
   },
   mutations: {
-    setInfo(state, info) {
+    async setInfo(state, info) {
       state.info = info
+	  // const { id, background } = info
+	  // let cache_image = uni.getStorageInfoSync(`cache-image-${id}`) || {}
+	  // const { background: cache_background } = cache_image
+	  // const { background: { url } } = info
+	  // if (url !== cache_background) {
+	  // 	await uni.getImageInfo({
+	  // 		       src: url,
+	  // 		       success: ({ height, path }) => {
+	  // 		       	console.log(height)
+	  // 		       	console.log(path)
+	  // 		       }
+	  // 		    })
+	  // }
       uni.setStorageSync("user-info", info)
     },
     setFriendInfo(state, data = {}) {

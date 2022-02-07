@@ -201,7 +201,7 @@ export default {
   methods: {
     ...mapMutations("Info", ["setInfoType", "setFriendInfo", "initFriendChat", "setChatFriendId"]),
     ...mapMutations("Record", [
-      "handerFriendChatRecord",
+      "handlerFriendChatRecord",
       "saveFriendChatRecord",
       "defaultFriendChatRecord",
       "clearBadgeCount",
@@ -250,7 +250,7 @@ export default {
         last_chat_time,
         record
       }
-      this.handerFriendChatRecord(data)
+      this.handlerFriendChatRecord(data)
       if (send_status) {
         getApp().ws.emit({
           type: "chat",
@@ -278,7 +278,7 @@ export default {
             chatTime: this.$moment().format("YYYY-MM-DD HH:mm:ss")
           }
         }
-        this.handerFriendChatRecord(errTipData)
+        this.handlerFriendChatRecord(errTipData)
       }
       this.params = {}
       this.$nextTick(() => {

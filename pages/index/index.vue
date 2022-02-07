@@ -240,7 +240,7 @@ export default {
       if (index === 0) {
         this.modalShow = true
       } else if (index === 1) {
-        this.putMyInfo()
+        // this.putMyInfo()
       } else {
         setTimeout(() => {
           this.$u.route({
