@@ -14,7 +14,7 @@
         </view>
         <view class="iconfont icon-sousuo uIcon" @tap="toSearch"></view>
       </view>
-      <view class="img" :style="{ backgroundImage: `url(${info.avatar})` }" @tap="tabShow = true"></view>
+      <view class="img" :style="avatar" @tap="tabShow = true"></view>
       <span class="name">{{ info.name }}</span>
       <view class="tabBar">
         <view class="iconfont icon-xinxi tabIcon" :class="{ active: current === 0 }" @tap="setTab(0)"></view>
@@ -25,8 +25,7 @@
         <view class="iconfont icon-tupian tabIcon" @tap="toSetBackground"></view>
         <view class="iconfont icon-tuichu tabIcon" @tap="show = true"></view>
       </view>
-      <BackgroundBox :url="info.background ? info.background.url : ''" :top="info.background ? info.background.top : 0">
-      </BackgroundBox>
+      <BackgroundBox :background-info="backgroundInfo"></BackgroundBox>
     </view>
     <swiper class="swiper" :current="current" @change="setCurrent">
       <swiper-item class="record-box">
@@ -123,8 +122,22 @@ export default {
   computed: {
     ...mapState("App", ["network_status", "statusBarHeight", "infoBoxHeight"]),
     ...mapState("Info", ["info", "friend_tips"]),
+    ...mapState("Cache", ["cache_image"]),
     top() {
       return `${this.statusBarHeight + 10}px`
+    },
+    backgroundInfo() {
+      const {
+        info: { background },
+        infoBoxHeight
+      } = this
+      let backgroundInfo = Object.assign({}, background, { infoBoxHeight })
+      return backgroundInfo
+    },
+    avatar() {
+      const { cache_image } = this
+      const { avatar } = this.info
+      return { backgroundImage: `url(${cache_image[avatar] || avatar})` }
     }
   },
   onShow() {
@@ -132,7 +145,7 @@ export default {
   },
   methods: {
     ...mapMutations("App", ["setLastPage"]),
-    ...mapMutations("Info", ["setInfo", "setFriendInfo", "setFriendTips", "setInfoType", "toFriendChat"]),
+    ...mapMutations("Info", ["setInfo", "setFriendInfo", "setFriendTips", "setInfoType", "handlerCacheImage"]),
     ...mapMutations("Record", ["clearRecord"]),
     async putMyInfo() {
       let type = this.ctrlIndex === 0 ? "name" : "avatar"
@@ -241,6 +254,7 @@ export default {
         this.modalShow = true
       } else if (index === 1) {
         // this.putMyInfo()
+        this.handlerCacheImage()
       } else {
         setTimeout(() => {
           this.$u.route({

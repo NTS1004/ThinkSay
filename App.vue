@@ -27,7 +27,9 @@ export default {
     let user_info = uni.getStorageSync("user-info")
     if (user_info) {
       this.init(user_info.id, user_info)
-      plus.navigator.closeSplashscreen()
+      setTimeout(() => {
+		  plus.navigator.closeSplashscreen()
+	  }, 200)
     } else {
       this.$u.route({
         type: "redirectTo",
@@ -60,18 +62,23 @@ export default {
     ...mapActions("Record", ["handlerFriendsChatRecord"]),
     init(id, info) {
       this.id = id
-      this.setInfo(info)
-      this.connectWebSocket(id)
-      let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
-      this.setFriendsRecordInfo(friend_record_info)
-      let user_record = uni.getStorageSync(`user-record-${id}`) || {}
-      this.handlerChatRecordList(user_record)
-      this.getRecordFriendList(user_record)
-      this.getChatRecordList()
-      this.getApplyRecordList(user_record)
+	  this.setInfo(info)
+	  this.connectWebSocket(id)
+	  this.initRecord(id)
     },
+	initRecord(id) {
+		let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
+		this.setFriendsRecordInfo(friend_record_info)
+		let user_record = uni.getStorageSync(`user-record-${id}`) || {}
+		this.handlerChatRecordList(user_record)
+		this.getRecordFriendList(user_record)
+		this.getChatRecordList()
+		this.getApplyRecordList(user_record)
+		this.putInitInfo()
+		this.getFriendList()
+	},
     async putInitInfo() {
-      let handlerInfo = this.deleteObjactKey(this.info, ["friends", "token", "quiet", "annoyed"])
+      let handlerInfo = this.deleteObjactKey(Object.assign({}, this.info), ["friends", "token", "quiet", "annoyed"])
       try {
         await funcPutInitInfo({ info: handlerInfo })
       } catch (err) {
@@ -118,8 +125,17 @@ export default {
     deleteObjactKey(data, keys) {
       let json = {}
       for (let i in data) {
-        if (keys.indexOf(i) === -1) {
-          json[i] = data[i]
+        if (!keys.includes(i) && !i.includes("cache")) {
+		  if (typeof data[i] === 'object') {
+			  let handler_value = {}
+			  for (let c in data[i]) {
+				  if (!c.includes("cache") && !c.includes("height")) {
+					handler_value[c] = data[i][c]
+				  }
+			  }
+			  data[i] = handler_value
+		  }
+		  json[i] = data[i]
         }
       }
       return json

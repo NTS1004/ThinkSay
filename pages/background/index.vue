@@ -51,21 +51,13 @@ export default {
   },
   computed: {
     ...mapState("Info", ["info"]),
+	...mapState("Cache", ["cache_image"]),
     itemInfo() {
       return (info) => {
         let { url, position } = info
         return { backgroundImage: `url(${url})`, backgroundPosition: position || "center" }
       }
     }
-  },
-  onLoad() {
-    // uni.getImageInfo({
-    //  src: url,
-    //  success: ({ height, path }) => {
-    //  	console.log(height)
-    //  	console.log(path)
-    //  }
-    // })
   },
   methods: {
     ...mapMutations("Info", ["setInfo"]),

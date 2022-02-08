@@ -17,7 +17,7 @@
       </view>
     </Header>
     <view class="friend" v-if="showFriendInfo">
-      <u-avatar class="avatar" mode="square" size="165" :src="rtc_info.avatar"></u-avatar>
+      <u-avatar class="avatar" mode="square" size="165" :src="avatar"></u-avatar>
       <view class="name">{{ rtc_info.name }}</view>
     </view>
     <view :class="['ctrl', show ? '' : 'hide']">
@@ -106,6 +106,7 @@ export default {
   computed: {
     ...mapState("App", ["statusBarHeight"]),
     ...mapState("Rtc", ["rtc_type", "rtc_status", "grounp", "rtc_info", "microPhone", "speaker"]),
+    ...mapState("Cache", ["cache_image"]),
     title() {
       const { rtc_type, rtc_status } = this
       let title
@@ -114,11 +115,17 @@ export default {
       }
       return title
     },
+    avatar() {
+      const { cache_image } = this
+      const { avatar } = this.rtc_info
+      return cache_image[avatar] || avatar
+    },
     background() {
+      const { cache_image } = this
       const { background } = this.rtc_info || {}
       if (this.rtc_type === "voice" && !this.grounp && background) {
-        const { url } = typeof background === "string" ? JSON.parse(background) : background
-        let backgroundImage = `background-image: url(${url})`
+        const { url } = background
+        let backgroundImage = `background-image: url(${cache_image[url] || url})`
         return `${backgroundImage}`
       } else {
         return "background: #434343"

@@ -1,12 +1,15 @@
 <template>
-  <view :class="['background-box', radius ? 'radius' : '']">
-    <view :class="['background', typeof this.top !== 'number' ? 'cover-height' : '']" :style="background"></view>
-  </view>
+  <view :class="['background-box', 'background', radius ? 'radius' : '']" :style="background"></view>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   props: {
+	backgroundInfo: {
+		type: Object,
+		default: () => {}
+	},
     url: {
       type: String,
       default: ""
@@ -21,17 +24,12 @@ export default {
     }
   },
   computed: {
+	...mapState('Cache', ['cache_image']),
     background() {
-	  let { url, top } = this
-	  // let infoBoxHeightPx = uni.upx2px(579)
-	  // let surplusHeight = 900 - top
-	  // top = infoBoxHeightPx > surplusHeight ? top - (infoBoxHeightPx - surplusHeight) : top
-      let background
-      if (typeof top === "number") {
-        background = `background-image: url(${url}); transform: translateY(-${top}px)`
-      } else {
-        background = `background-image: url(${url})`
-      }
+	  const { cache_image } = this
+	  let { url, top } = this.backgroundInfo
+	  let backgroundPosition = top ? `0 -${top}px` : 'center'
+	  let background = `background-image: url(${cache_image[url] || url}); background-position: ${backgroundPosition};`
       return background
     }
   }
@@ -45,17 +43,9 @@ export default {
   height: 100%;
   z-index: -1;
   overflow: hidden;
-  .background {
-    width: 100%;
-    height: 100vh;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-	transition: .3s all;
-  }
-  .cover-height {
-    height: 100%;
-  }
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: .3s all;
 }
 .radius {
   border-radius: 0 0 28rpx 28rpx;

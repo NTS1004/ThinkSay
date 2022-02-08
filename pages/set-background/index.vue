@@ -85,10 +85,12 @@ export default {
       this.start_y = clientY - offsetTop
     },
     touchMove(e) {
-      let { clientY } = e.touches[0]
-      let top = clientY - this.start_y > 0 ? clientY - this.start_y : 0
-      if (top >= plus.screen.resolutionHeight - uni.upx2px(this.infoBoxHeight)) {
-        top = plus.screen.resolutionHeight - uni.upx2px(this.infoBoxHeight)
+      const { clientY } = e.touches[0]
+	  const { start_y, infoBoxHeight } = this
+	  const { screenHeight } = uni.getSystemInfoSync()
+      let top = clientY - start_y > 0 ? clientY - start_y : 0
+      if (top >= screenHeight - uni.upx2px(infoBoxHeight)) {
+        top = screenHeight - uni.upx2px(infoBoxHeight)
       }
       this.params.top = top
     },

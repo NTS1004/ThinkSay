@@ -2,9 +2,9 @@
   <view class="content">
     <view class="infoBox" :style="{ height: `${infoBoxHeight}rpx` }">
       <view class="headIcon" :style="{ top }"><view class="iconfont icon-zuojiantou uIcon" @tap="goBack"></view></view>
-      <view class="img" :style="{ backgroundImage: `url(${friend_info.avatar})` }"></view>
+      <view class="img" :style="avatar"></view>
       <span class="name">{{ friend_info.name }}</span>
-      <BackgroundBox :url="background.url" :top="background.top" :radius="false"></BackgroundBox>
+      <BackgroundBox :background-info="backgroundInfo" :radius="false"></BackgroundBox>
     </view>
     <view v-if="info_type === 'friend'">
       <view class="option-box">
@@ -71,13 +71,20 @@ export default {
   computed: {
     ...mapState("App", ["statusBarHeight", "infoBoxHeight"]),
     ...mapState("Info", ["info", "friend_info", "info_type"]),
+    ...mapState("Cache", ["cache_image"]),
     top() {
       return `${this.statusBarHeight + 10}px`
     },
-    background() {
-      let { background } = this.friend_info
-      background = typeof background === "string" ? JSON.parse(background) : background
+    backgroundInfo() {
+      const {
+        friend_info: { background }
+      } = this
       return background
+    },
+    avatar() {
+      const { cache_image } = this
+      const { avatar } = this.friend_info
+      return { backgroundImage: `url(${cache_image[avatar] || avatar})` }
     }
   },
   onLoad() {

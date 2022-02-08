@@ -8,30 +8,32 @@ export default {
     chat_friend_id: null
   },
   mutations: {
-    async setInfo(state, info) {
+    setInfo(state, info) {
+      const {
+        avatar,
+        background: { url }
+      } = info
+      const { cache_image } = this.state.Cache
       state.info = info
-	  // const { id, background } = info
-	  // let cache_image = uni.getStorageInfoSync(`cache-image-${id}`) || {}
-	  // const { background: cache_background } = cache_image
-	  // const { background: { url } } = info
-	  // if (url !== cache_background) {
-	  // 	await uni.getImageInfo({
-	  // 		       src: url,
-	  // 		       success: ({ height, path }) => {
-	  // 		       	console.log(height)
-	  // 		       	console.log(path)
-	  // 		       }
-	  // 		    })
-	  // }
+      if (!cache_image[avatar] || !cache_image[url]) {
+        this.commit("Cache/handlerCacheImage", { avatar, url })
+      }
       uni.setStorageSync("user-info", info)
     },
     setFriendInfo(state, data = {}) {
+      const { cache_image } = this.state.Cache
       if (Object.keys(data).length === 0) {
         state.friend_info = {}
         state.chat_friend_id = null
         this.commit("Record/clearFriendChatRecord")
       } else {
-        state.friend_info = Object.assign({}, state.friend_info, data)
+        const { friend_info } = state
+        state.friend_info = Object.assign({}, friend_info, data)
+        const {
+          avatar,
+          background: { url }
+        } = data
+        this.commit("Cache/handlerCacheImage", { avatar, url })
       }
     },
     setInfoType(state, type) {
@@ -46,7 +48,7 @@ export default {
     initFriendChat(state, friendId) {
       let { friends_record_info } = this.state.Record
       this.commit("Info/setChatFriendId", friendId)
-      state.friend_info = friends_record_info[friendId]
+      this.commit("Info/setFriendInfo", friends_record_info[friendId])
       this.commit("Record/initFriendChatRecord", friendId)
     }
   }

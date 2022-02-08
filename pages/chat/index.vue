@@ -18,7 +18,7 @@
           <view class="tips time">{{ hander_charTime(key, true) }}</view>
           <view v-for="(item, index) in value" :key="index">
             <view v-if="Number(item.key) === Number(info.id)" class="record my-record">
-              <u-avatar class="avatar" mode="square" size="86" :src="info.avatar"></u-avatar>
+              <u-avatar class="avatar" mode="square" size="86" :src="avatar(info.avatar)"></u-avatar>
               <view class="box">
                 <view
                   v-if="item.send_error"
@@ -49,7 +49,7 @@
               </view>
             </view>
             <view v-else-if="Number(item.key) !== Number(info.id) && item.key !== 'tip'" class="record friend-record">
-              <u-avatar class="avatar" mode="square" size="86" :src="friend_info.avatar"></u-avatar>
+              <u-avatar class="avatar" mode="square" size="86" :src="avatar(friend_info.avatar)"></u-avatar>
               <view class="box">
                 <view
                   v-if="item.image_src"
@@ -158,6 +158,7 @@ export default {
       "last_index",
       "previewImages"
     ]),
+    ...mapState("Cache", ["cache_image"]),
     headerHeight() {
       return this.statusBarHeight + uni.upx2px(95)
     },
@@ -171,11 +172,17 @@ export default {
       return (tip) => {
         return errTipText[tip]
       }
+    },
+    avatar() {
+      return (avatar) => {
+        const { cache_image } = this
+        return cache_image[avatar] || avatar
+      }
     }
   },
   onLoad(params) {
-    let systemInfo = uni.getSystemInfoSync()
-    this.screen_height = systemInfo.screenHeight
+    let { screenHeight } = uni.getSystemInfoSync()
+    this.screen_height = screenHeight
     const { friendId } = params
     if (friendId) {
       this.friendId = friendId
@@ -415,7 +422,8 @@ export default {
         .select(".footer")
         .boundingClientRect((data) => {
           const { height } = data
-          let scroll_height = this.screen_height - this.headerHeight - this.keyboard_height - height
+          const { screen_height, headerHeight, keyboard_height } = this
+          let scroll_height = screen_height - headerHeight - keyboard_height - height
           this.scroll_height = scroll_height
           if (height >= 85) {
             this.$nextTick(() => {
