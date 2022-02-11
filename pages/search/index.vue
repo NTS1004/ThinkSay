@@ -46,7 +46,8 @@ export default {
     ...mapState("App", ["friend_data"])
   },
   methods: {
-    ...mapMutations("Info", ["setFriendInfo", "setInfoType"]),
+    ...mapMutations(["setState"]),
+    ...mapMutations("Info", ["setFriendInfo"]),
     async getSearchFriends() {
       uni.showLoading({
         title: "搜索中..."
@@ -55,6 +56,7 @@ export default {
         const {
           data: [info]
         } = await funcGetSearchFriends(this.params)
+        info.background = JSON.parse(info.background)
         this.toNewFriendInfo(info)
       } catch (err) {
         console.log(err)
@@ -108,7 +110,12 @@ export default {
     toNewFriendInfo(info) {
       if (info.id) {
         this.setFriendInfo(info)
-        this.setInfoType("make_friend")
+        this.setState({
+          module: "Info",
+          state: {
+            info_type: "make_friend"
+          }
+        })
         this.$u.route({
           url: "/pages/info/index"
         })

@@ -17,11 +17,6 @@ export default {
   namespaced: true,
   state: default_state,
   mutations: {
-    setState(state, [data, callback]) {
-      state = Object.assign(state, data)
-      if (callback) callback(state)
-      console.log(state)
-    },
     closeRtc(state) {
       state = default_state
     }

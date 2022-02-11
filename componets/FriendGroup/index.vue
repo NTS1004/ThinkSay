@@ -62,21 +62,20 @@ export default {
   },
   computed: {
     ...mapState("Record", ["friends_record_info"]),
+    ...mapState("Cache", ["cache_image"]),
     Avatar() {
-      return (item) => {
-        if (this.friends_record_info[item.id]) {
-          return this.friends_record_info[item.id].avatar
-        } else {
-          return item.avatar
-        }
+      return ({ id, avatar }) => {
+        const { friends_record_info, cache_image } = this
+        let record_avatar = friends_record_info[id]?.avatar
+        return cache_image[record_avatar || avatar] || record_avatar || avatar || ""
       }
     },
     Name() {
-      return (item) => {
-        if (this.friends_record_info[item.id]) {
-          return this.friends_record_info[item.id].name
+      return ({ id, name }) => {
+        if (this.friends_record_info[id]) {
+          return this.friends_record_info[id].name
         } else {
-          return item.name
+          return name
         }
       }
     }

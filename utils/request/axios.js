@@ -39,16 +39,16 @@ axios.interceptors.response.use(
       if (status === "error") {
         const { title, content } = message
         if (title) {
-          // Modal({
-          // 	title,
-          // 	content
-          // })
+          Modal({
+            title,
+            content
+          })
         } else {
-          // Toast(content)
+          Toast(content)
         }
       } else {
         if (message) {
-          // Toast(message)
+          Toast(message)
         }
       }
     }

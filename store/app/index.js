@@ -8,24 +8,12 @@ export default {
     statusBarHeight: 0,
     lastPage: true,
     isBackground: false,
-    infoBoxHeight: 530
+    infoBoxHeight: 540,
+	isCover: false
   },
   mutations: {
-    setNetworkStatus(state, bool) {
-      state.network_status = bool
-    },
-    setStatusBarHeight(state, height) {
-      state.statusBarHeight = height
-      state.infoBoxHeight += height
-    },
     setFriendData(state, data) {
       state.friend_data = data
-    },
-    setLastPage(state, bool) {
-      state.lastPage = bool
-    },
-    setIsBackground(state, bool) {
-      state.isBackground = bool
     },
     deleteFriend(state, { initials, index }) {
       let friend_data = state.friend_data
@@ -70,7 +58,8 @@ export default {
         let user_record = uni.getStorageSync(`user-record-${myId}`) || {}
         let friend_data = {}
         for (let i = 0; i < data.length; i++) {
-          const { id: friendId, initials } = data[i]
+          const { id: friendId, initials, avatar, background } = data[i]
+          data[i].background = JSON.parse(background)
           if (!friend_data[initials]) {
             friend_data[initials] = []
           }
@@ -84,10 +73,11 @@ export default {
           if (Number(chat_friend_id) === Number(friendId)) {
             this.commit("Info/setFriendInfo", data[i])
           }
+          this.commit("Cache/handlerCacheImage", { avatar, background })
           user_record[friendId].status = "friend"
         }
         user_record.friend_data = friend_data
-        this.commit("Record/hanlderFriendsRecordInfo", user_record)
+        this.commit("Record/handlerFriendsRecordInfo", user_record)
         commit("setFriendData", friend_data)
         uni.setStorageSync(`user-record-${myId}`, user_record)
       } catch (err) {

@@ -9,16 +9,28 @@ class ws {
     this.keepInterval = null
     this.reconnectTimeout = null
     this.networkStatus = false
+    this.connectError = false
     uni.getNetworkType({
       success: (res) => {
         const { networkType } = res
         if (networkType === "none") {
+          this.connectError = true
           this.networkStatus = false
-          store.commit("App/setNetworkStatus", false)
+          store.commit("setState", {
+            module: "App",
+            state: {
+              network_status: false
+            }
+          })
         } else {
           this.connect()
           this.networkStatus = true
-          store.commit("App/setNetworkStatus", true)
+          store.commit("setState", {
+            module: "App",
+            state: {
+              network_status: true
+            }
+          })
         }
       }
     })
@@ -32,7 +44,12 @@ class ws {
         }
       }
       this.networkStatus = isConnected
-      store.commit("App/setNetworkStatus", isConnected)
+      store.commit("setState", {
+        module: "App",
+        state: {
+          network_status: isConnected
+        }
+      })
     })
   }
   connect() {
@@ -45,8 +62,10 @@ class ws {
     })
     this.socketTask.onOpen(() => {
       console.log("连接成功")
-      getApp().putInitInfo()
-      getApp().getFriendList()
+      if (this.connectError) {
+        getApp().initRecord(getApp().id)
+        this.connectError = false
+      }
       this.is_click_close = false
       this.ping()
     })
@@ -71,6 +90,7 @@ class ws {
     })
     this.socketTask.onError((e) => {
       console.log("连接失败")
+      this.connectError = true
       setTimeout(() => {
         if (this.networkStatus) {
           this.reconnect()

@@ -1,35 +1,77 @@
 <template>
   <view :class="['background-box', radius ? 'radius' : '']">
-    <view :class="['background', typeof this.top !== 'number' ? 'cover-height' : '']" :style="background"></view>
+    <view :class="['background', cover, radius ? 'radius' : '']" :style="background"></view>
   </view>
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex"
 export default {
   props: {
-    url: {
-      type: String,
-      default: ""
-    },
-    top: {
-      type: [Number, String],
-      default: null
+    backgroundInfo: {
+      type: Object,
+      default: () => {}
     },
     radius: {
       type: Boolean,
       default: true
+    },
+    preview: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      top: 0
     }
   },
   computed: {
+    ...mapState("App", ["isCover"]),
+    ...mapState("Cache", ["cache_image"]),
     background() {
-      let background
-      if (this.top && typeof this.top === "number") {
-        background = `background-image: url(${this.url}); transform: translateY(-${this.top}px)`
-      } else {
-        background = `background-image: url(${this.url})`
-      }
+      const { cache_image, isCover, preview, top } = this
+      let { url } = this.backgroundInfo
+      let translateY = typeof top === "number" && !isCover ? `transform: translateY(-${preview ? 0 : top}px)` : ""
+      let background = `background-image: url(${cache_image[url] || url}); ${translateY}`
       return background
+    },
+    cover() {
+      const { isCover } = this
+      const { top } = this.backgroundInfo
+      let cover = isCover || typeof top !== "number" ? "cover-height" : ""
+      return cover
     }
+  },
+  watch: {
+    backgroundInfo: {
+      handler({ top }) {
+        this.top = top
+      },
+      immediate: true
+    }
+  },
+  mounted() {
+    const { infoBoxHeight } = this.backgroundInfo
+    const infoBoxHeightPx = uni.upx2px(infoBoxHeight)
+    const query = uni.createSelectorQuery()
+    query
+      .select(".background")
+      .boundingClientRect(({ height, top }) => {
+        let surplusHeight = height + top
+        if (infoBoxHeightPx > surplusHeight) {
+          this.setState({
+            module: "App",
+            state: {
+              isCover: true
+            }
+          })
+        }
+      })
+      .exec()
+  },
+  methods: {
+    ...mapMutations(["setState"])
   }
 }
 </script>
@@ -41,14 +83,14 @@ export default {
   height: 100%;
   z-index: -1;
   overflow: hidden;
-  // border: 1px solid;
   .background {
-    width: 100%;
+    width: 100vw;
     height: 100vh;
+    background: #434343;
+    background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center;
-    // margin-top: 100px;
+    transition: 0.4s all;
   }
   .cover-height {
     height: 100%;

@@ -9,8 +9,7 @@
         @tap="toFriendChat(item)"
       >
         <view style="position: relative">
-          <u-avatar mode="square" size="94" :src="friends_record_info[item.id].avatar" style="position: relative">
-          </u-avatar>
+          <u-avatar mode="square" size="94" :src="Avatar(item)" style="position: relative"> </u-avatar>
           <u-badge v-show="item.badge_count" :count="item.badge_count" type="error" :offset="[-10, -10]"></u-badge>
         </view>
         <view class="itemBody">
@@ -33,6 +32,14 @@ import hander_charTime from "@/utils/hander_chatTime.js"
 export default {
   computed: {
     ...mapState("Record", ["chat_record_list", "friends_record_info"]),
+    ...mapState("Cache", ["cache_image"]),
+    Avatar() {
+      return ({ id }) => {
+        const { friends_record_info, cache_image } = this
+        let record_avatar = friends_record_info[id].avatar
+        return cache_image[record_avatar] || record_avatar
+      }
+    },
     message() {
       return (item) => {
         let message

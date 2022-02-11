@@ -4,7 +4,7 @@
     <u-tabs-swiper
       ref="tabs"
       :current="current"
-      :list="list"
+      :list="classification"
       :is-scroll="false"
       active-color="#52acff"
       :active-item-style="{ color: '#52acff' }"
@@ -12,32 +12,16 @@
       @change="clickTab"
     ></u-tabs-swiper>
     <swiper class="swiper" :current="current" @change="setCurrent">
-      <swiper-item class="swiperItem">
+      <swiper-item v-for="(item, index) in background" :key="index" class="swiperItem">
         <scroll-view class="scroll" scroll-y="true" style="height: 100%">
           <view
-            v-for="(item, index) in background"
-            :key="index"
-            :class="['background-item', index === background.length - 1 ? 'bottom-none' : '']"
-            :style="itemInfo({ url: item.url })"
-            @tap="goSetBackground(item)"
+            v-for="(i, iIndex) in item"
+            :key="iIndex"
+            :class="['background-item']"
+            :style="itemInfo(i)"
+            @tap="goSetBackground(i)"
           >
-            <view class="select-active" v-if="item.url === info.background.url">
-              <u-icon name="checkbox-mark" class="icon"></u-icon>
-            </view>
-          </view>
-          <view style="height: 26rpx"></view>
-        </scroll-view>
-      </swiper-item>
-      <swiper-item>
-        <scroll-view class="scroll" scroll-y="true" style="height: 100%">
-          <view
-            v-for="(item, index) in gradual"
-            :key="index"
-            :class="['background-item', index === gradual.length - 1 ? 'bottom-none' : '']"
-            :style="itemInfo({ url: item.url })"
-            @tap="putMyInfo(item)"
-          >
-            <view class="select-active" v-if="item.url === info.background.url">
+            <view class="select-active" v-if="i.url === info.background.url">
               <u-icon name="checkbox-mark" class="icon"></u-icon>
             </view>
           </view>
@@ -50,25 +34,17 @@
 
 <script>
 import Header from "@/componets/Header/index.vue"
-import { background, gradual } from "./utils.js"
 import { mapState, mapMutations } from "vuex"
-import { funcPutMyInfo } from "@/api/info/index.js"
+import { classification, background } from "./utils/pageData.js"
+
 export default {
   components: {
     Header
   },
   data() {
     return {
+      classification,
       background,
-      gradual,
-      list: [
-        {
-          name: "推荐"
-        },
-        {
-          name: "渐变"
-        }
-      ],
       current: 0
     }
   },
@@ -77,34 +53,11 @@ export default {
     itemInfo() {
       return (info) => {
         let { url, position } = info
-        let backgroundPosition = {}
-        if (position) {
-          backgroundPosition = {
-            backgroundPosition: position
-          }
-        }
-        return { backgroundImage: `url(${url})`, ...backgroundPosition }
+        return { backgroundImage: `url(${url})`, backgroundPosition: position || "center" }
       }
     }
   },
   methods: {
-    ...mapMutations("Info", ["setInfo"]),
-    async putMyInfo(data) {
-      uni.showLoading({
-        title: "设置中..."
-      })
-      let background = JSON.stringify({
-        url: data.url,
-        top: 0
-      })
-      try {
-        const { data } = await funcPutMyInfo({ type: "background", background })
-        this.setInfo({ ...this.info, ...data })
-      } catch (err) {
-        console.log(err)
-      }
-      uni.hideLoading()
-    },
     clickTab(v) {
       this.current = v
     },

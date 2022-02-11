@@ -1,22 +1,24 @@
 <template>
   <view class="content">
-    <view class="infoBox" :style="{ height: `${infoBoxHeight}rpx` }">
-      <view class="headIcon" :style="{ top }">
-        <view class="iconfont icon-saoyisao uIcon" style="font-size: 50rpx" v-show="current === 0" @tap="saoyisao">
+    <view class="box">
+      <InfoBox :info="info" :tapAvatar="() => (tabShow = true)" :hideOutside="hideOutside">
+        <view slot="left-operation">
+          <view class="iconfont icon-saoyisao uIcon" style="font-size: 50rpx" v-show="current === 0" @tap="saoyisao">
+          </view>
+          <view
+            class="iconfont icon-tianjiahaoyou uIcon"
+            style="font-size: 50rpx"
+            v-show="current === 1"
+            @tap="toNewFriend"
+          >
+            <u-badge v-show="friend_tips" :is-dot="true" type="error" :offset="[0, 4]"></u-badge>
+          </view>
         </view>
-        <view
-          class="iconfont icon-tianjiahaoyou uIcon"
-          style="font-size: 50rpx"
-          v-show="current === 1"
-          @tap="toNewFriend"
-        >
-          <u-badge v-show="friend_tips" :is-dot="true" type="error" :offset="[0, 4]"></u-badge>
+        <view slot="right-operation">
+          <view class="iconfont icon-sousuo uIcon" @tap.stop="toSearch"></view>
         </view>
-        <view class="iconfont icon-sousuo uIcon" @tap="toSearch"></view>
-      </view>
-      <view class="img" :style="{ backgroundImage: `url(${info.avatar})` }" @tap="tabShow = true"></view>
-      <span class="name">{{ info.name }}</span>
-      <view class="tabBar">
+      </InfoBox>
+      <view :class="['tabBar', animation, visible ? 'show' : 'hide']">
         <view class="iconfont icon-xinxi tabIcon" :class="{ active: current === 0 }" @tap="setTab(0)"></view>
         <view class="iconfont icon-haoyou tabIcon" :class="{ active: current === 1 }" @tap="setTab(1)">
           <u-badge v-show="friend_tips" :is-dot="true" type="error" :offset="[0, 2]"></u-badge>
@@ -25,8 +27,6 @@
         <view class="iconfont icon-tupian tabIcon" @tap="toSetBackground"></view>
         <view class="iconfont icon-tuichu tabIcon" @tap="show = true"></view>
       </view>
-      <BackgroundBox :url="info.background ? info.background.url : ''" :top="info.background ? info.background.top : 0">
-      </BackgroundBox>
     </view>
     <swiper class="swiper" :current="current" @change="setCurrent">
       <swiper-item class="record-box">
@@ -74,7 +74,7 @@
 <script>
 import Record from "./record/index.vue"
 import Friend from "./friend/index.vue"
-import BackgroundBox from "@/componets/BackgroundBox/index.vue"
+import InfoBox from "@/componets/InfoBox/index.vue"
 import { mapState, mapMutations } from "vuex"
 import { funcPutMyInfo } from "@/api/info/index.js"
 import { funcGetSearchFriends } from "@/api/friend/index.js"
@@ -83,16 +83,17 @@ export default {
   components: {
     Record,
     Friend,
-    BackgroundBox
+    InfoBox
   },
   data() {
     return {
-      boxHeight: 530,
       current: 0,
       show: false,
       tabShow: false,
       modalShow: false,
       ctrlIndex: null,
+      tabBarHide: "",
+      visible: true,
       params: {
         name: ""
       },
@@ -121,18 +122,25 @@ export default {
     }
   },
   computed: {
-    ...mapState("App", ["network_status", "statusBarHeight", "infoBoxHeight"]),
+    ...mapState("App", ["network_status"]),
     ...mapState("Info", ["info", "friend_tips"]),
-    top() {
-      return `${this.statusBarHeight + 10}px`
+    animation() {
+      const { tabBarHide } = this
+      let animation = tabBarHide === "" ? "" : tabBarHide ? "hideAnimate" : "showAnimate"
+      return animation
     }
   },
   onShow() {
-    this.setLastPage(true)
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: true
+      }
+    })
   },
   methods: {
-    ...mapMutations("App", ["setLastPage"]),
-    ...mapMutations("Info", ["setInfo", "setFriendInfo", "setFriendTips", "setInfoType", "toFriendChat"]),
+    ...mapMutations(["setState"]),
+    ...mapMutations("Info", ["setInfo", "setFriendInfo", "handlerCacheImage"]),
     ...mapMutations("Record", ["clearRecord"]),
     async putMyInfo() {
       let type = this.ctrlIndex === 0 ? "name" : "avatar"
@@ -203,12 +211,22 @@ export default {
         url: "/pages/new-friends/index"
       })
       if (this.friend_tips) {
-        this.setFriendTips(false)
+        this.setState({
+          module: "Info",
+          state: {
+            friend_tips: false
+          }
+        })
       }
     },
     toNewFriendInfo(info) {
       this.setFriendInfo(info)
-      this.setInfoType("make_friend")
+      this.setState({
+        module: "Info",
+        state: {
+          info_type: "make_friend"
+        }
+      })
       this.$u.route({
         url: "/pages/info/index"
       })
@@ -254,13 +272,29 @@ export default {
       setTimeout(() => {
         this.params = {}
       }, 300)
+    },
+    hideOutside() {
+      this.tabBarHide = !this.tabBarHide
+      setTimeout(() => {
+        this.visible = !this.tabBarHide
+      }, 300)
     }
   },
   onHide() {
-    this.setLastPage(false)
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: false
+      }
+    })
   },
   onUnload() {
-    this.setLastPage(false)
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: false
+      }
+    })
   }
 }
 </script>

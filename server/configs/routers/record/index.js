@@ -39,7 +39,9 @@ routers.get("chat/:id/list", async (ctx) => {
     ctx.body = ctx.echo("success", "", {
       data
     })
-    await ctx.db.execute(`UPDATE think_record SET status = 'read' WHERE friendId = ${id}`)
+    if (Object.keys(data).length > 0) {
+      await ctx.db.execute(`UPDATE think_record SET status = 'read' WHERE friendId = ${id}`)
+    }
   } catch (err) {
     console.log(err)
     ctx.body = ctx.echo("error")
@@ -48,7 +50,16 @@ routers.get("chat/:id/list", async (ctx) => {
 
 routers.post("chat/:friendId/save", async (ctx) => {
   let { friendId } = ctx.params
-  let { key, msg = "", chatTime, image_src = "", image_width = "", image_height = "", tips = [], image_source } = ctx.request.body
+  let {
+    key,
+    msg = "",
+    chatTime,
+    image_src = "",
+    image_width = "",
+    image_height = "",
+    tips = [],
+    image_source
+  } = ctx.request.body
   if (image_source) image_src = image_source
   try {
     await ctx.db.execute(
@@ -79,7 +90,9 @@ routers.get("apply/:id/list", async (ctx) => {
     ctx.body = ctx.echo("success", "", {
       data
     })
-    await ctx.db.execute(`UPDATE think_record SET status = 'read' WHERE friendId = ${id}`)
+    if (data.length > 0) {
+      await ctx.db.execute(`UPDATE think_record SET status = 'read' WHERE friendId = ${id}`)
+    }
   } catch (err) {
     ctx.body = ctx.echo("error", {
       content: "获取添加申请列表失败"
