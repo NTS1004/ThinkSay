@@ -1,50 +1,50 @@
 <template>
   <view class="content">
-    <view class="infoBox" :style="{ height: `${infoBoxHeight}rpx` }">
-      <view class="headIcon" :style="{ top }"><view class="iconfont icon-zuojiantou uIcon" @tap="goBack"></view></view>
-      <view class="img" :style="avatar"></view>
-      <span class="name">{{ friend_info.name }}</span>
-      <BackgroundBox :background-info="backgroundInfo" :radius="false"></BackgroundBox>
-    </view>
-    <view v-if="info_type === 'friend'">
-      <view class="option-box">
-        <view class="option">
-          <span>信息免打扰</span>
-          <u-switch v-model="quiet" size="40" @change="(v) => settingQuiet('quiet', v)" activeColor="#52acff">
-          </u-switch>
+    <InfoBox :info="friend_info" :radius="false">
+      <view slot="left-operation">
+        <view class="iconfont icon-zuojiantou uIcon" @tap.stop="goBack"></view>
+      </view>
+    </InfoBox>
+    <view class="box">
+      <view v-if="info_type === 'friend'">
+        <view class="option-box">
+          <view class="option">
+            <span>信息免打扰</span>
+            <u-switch v-model="quiet" size="40" @change="(v) => settingQuiet('quiet', v)" activeColor="#52acff">
+            </u-switch>
+          </view>
+          <u-line type="info" />
+          <view class="option">
+            <span>加入黑名单</span>
+            <u-switch :value="annoyed" size="40" @change="(v) => settingAnnoyed('annoyed', v)" activeColor="#52acff">
+            </u-switch>
+          </view>
+          <u-line type="info" />
         </view>
-        <u-line type="info" />
+        <view class="delete"><u-button type="error" :custom-style="errBtn" @tap="confirmDelete">删除</u-button></view>
+      </view>
+      <view v-else>
         <view class="option">
-          <span>加入黑名单</span>
-          <u-switch :value="annoyed" size="40" @change="(v) => settingAnnoyed('annoyed', v)" activeColor="#52acff">
-          </u-switch>
+          <span>添加方式</span>
+          <span>搜索查询</span>
         </view>
-        <u-line type="info" />
-      </view>
-      <view class="delete"><u-button type="error" :custom-style="errBtn" @tap="confirmDelete">删除</u-button></view>
-    </view>
-    <view v-else>
-      <view class="option">
-        <span>添加方式</span>
-        <span>搜索查询</span>
-      </view>
-      <view class="btn-box" v-if="info_type === 'make_friend'">
-        <u-button type="primary" class="btn" :custom-style="{ ...ctrlBtn, marginRight: '15rpx' }" @tap="putFriendApply">
-          添加好友
-        </u-button>
-        <u-button type="default" :custom-style="{ ...ctrlBtn, marginLeft: '15rpx' }" @tap="goBack">取消</u-button>
-      </view>
-      <view class="btn-box" v-else>
-        <u-button type="primary" :custom-style="{ ...ctrlBtn, marginRight: '15rpx' }" @tap="putFriendAccept">
-          接受
-        </u-button>
-        <u-button type="default" :custom-style="{ ...ctrlBtn, marginLeft: '15rpx' }" @tap="goBack">加入黑名单</u-button>
+        <view class="btn-box" v-if="info_type === 'make_friend'">
+          <u-button type="primary" class="btn" :custom-style="btnStyle('marginRight')" @tap="putFriendApply">
+            添加好友
+          </u-button>
+          <u-button type="default" :custom-style="btnStyle('marginLeft')" @tap="goBack">取消</u-button>
+        </view>
+        <view class="btn-box" v-else>
+          <u-button type="primary" :custom-style="btnStyle('marginRight')" @tap="putFriendAccept"> 接受 </u-button>
+          <u-button type="error" :custom-style="btnStyle('marginLeft')" @tap="goBack">加入黑名单</u-button>
+        </view>
       </view>
     </view>
   </view>
 </template>
 
 <script>
+import InfoBox from "@/componets/InfoBox/index.vue"
 import { mapState, mapMutations, mapActions } from "vuex"
 import {
   funcDeleteFriend,
@@ -55,6 +55,7 @@ import {
 import BackgroundBox from "@/componets/BackgroundBox/index.vue"
 export default {
   components: {
+    InfoBox,
     BackgroundBox
   },
   data() {
@@ -64,27 +65,17 @@ export default {
       quietWait: null,
       quietList: [],
       defaultQuiet: false,
-      ctrlBtn: { flex: 1, height: "100rpx" },
       errBtn: { margin: "70rpx 0rpx", height: "105rpx", borderRadius: 0 }
     }
   },
   computed: {
-    ...mapState("App", ["statusBarHeight", "infoBoxHeight"]),
     ...mapState("Info", ["info", "friend_info", "info_type"]),
-    ...mapState("Cache", ["cache_image"]),
-    top() {
-      return `${this.statusBarHeight + 10}px`
-    },
-    backgroundInfo() {
-      const {
-        friend_info: { background }
-      } = this
-      return background
-    },
-    avatar() {
-      const { cache_image } = this
-      const { avatar } = this.friend_info
-      return { backgroundImage: `url(${cache_image[avatar] || avatar})` }
+    btnStyle() {
+      return (direction) => {
+        let btnStyle = { flex: 1, height: "100rpx" }
+        btnStyle = Object.assign(btnStyle, { [direction]: "16rpx" })
+        return btnStyle
+      }
     }
   },
   onLoad() {
@@ -113,7 +104,7 @@ export default {
         const { id: friendId, initials, index } = this.friend_info
         await funcDeleteFriend({ friendId })
         let user_record = uni.getStorageSync(`user-record-${this.info.id}`) || {}
-        delete user_record[id]
+        delete user_record[friendId]
         this.handlerNewFriendsRecord(user_record)
         this.handlerChatRecordList(user_record)
         this.deleteFriend({ initials, index })

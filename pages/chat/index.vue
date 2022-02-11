@@ -206,7 +206,8 @@ export default {
     this.load = true
   },
   methods: {
-    ...mapMutations("Info", ["setInfoType", "setFriendInfo", "initFriendChat", "setChatFriendId"]),
+    ...mapMutations(["setState"]),
+    ...mapMutations("Info", ["setFriendInfo", "initFriendChat"]),
     ...mapMutations("Record", [
       "handlerFriendChatRecord",
       "saveFriendChatRecord",
@@ -215,7 +216,6 @@ export default {
       "clearFriendChatRecord",
       "deleteOneFriendChatRecord"
     ]),
-    ...mapMutations("Rtc", ["setState"]),
     ...mapActions("Record", ["getFriendChatRecordList"]),
     hander_charTime,
     // 发送信息
@@ -301,14 +301,15 @@ export default {
     },
     // 发起语音通话或视频聊天
     selectConnect(index) {
-      let data = {
+      let state = {
         rtc_type: index ? "video" : "voice",
         rtc_status: "send",
         rtc_info: this.friend_info
       }
-      this.setState([
-        data,
-        ({ rtc_type }) => {
+      this.setState({
+        module: "Rtc",
+        state,
+        callback: ({ rtc_type }) => {
           // getApp().ws.emit({
           //   type: rtc_type,
           //   friendId: this.friendId
@@ -318,7 +319,7 @@ export default {
             animationType: "zoom-fade-out"
           })
         }
-      ])
+      })
     },
     // 选择本地图片，并发送
     selectImage() {
@@ -487,7 +488,12 @@ export default {
       })
     },
     toDetails() {
-      this.setInfoType("friend")
+      this.setState({
+        module: "Info",
+        state: {
+          info_type: "friend"
+        }
+      })
       this.$u.route({
         url: "/pages/info/index"
       })
@@ -495,12 +501,22 @@ export default {
   },
   onShow() {
     if (this.load) {
-      this.setChatFriendId(this.friendId)
+      this.setState({
+        module: "Info",
+        state: {
+          chat_friend_id: this.friendId
+        }
+      })
     }
   },
   onHide() {
     this.saveFriendChatRecord(this.friendId)
-    this.setChatFriendId(null)
+    this.setState({
+      module: "Info",
+      state: {
+        chat_friend_id: null
+      }
+    })
   },
   onUnload() {
     this.saveFriendChatRecord(this.friendId)

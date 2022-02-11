@@ -45,7 +45,8 @@ export default {
     ...mapState("Record", ["new_friends_record", "friends_record_info"])
   },
   methods: {
-    ...mapMutations("Info", ["setFriendInfo", "setInfoType"]),
+    ...mapMutations(["setState"]),
+    ...mapMutations("Info", ["setFriendInfo"]),
     inputSearch(e) {
       let new_friends_record = Object.keys(this.new_friends_record)
       let filter_new_friends_record = {}
@@ -71,17 +72,15 @@ export default {
     },
     toNewFriend(info) {
       this.setFriendInfo(info)
-      if (info.status === "verify") {
-        this.setInfoType("new_friend")
-        this.$u.route({
-          url: "/pages/info/index"
-        })
-      } else {
-        this.setInfoType("friend")
-        this.$u.route({
-          url: "/pages/chat/index"
-        })
-      }
+      this.setState({
+        module: "Info",
+        state: {
+          info_type: info.status === "verify" ? "make_friend" : "friend"
+        }
+      })
+      this.$u.route({
+        url: info.status === "verify" ? "/pages/info/index" : "/pages/chat/index"
+      })
     },
     goHome() {
       this.$u.route({

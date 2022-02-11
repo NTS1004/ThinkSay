@@ -57,10 +57,15 @@ export default {
     })
   },
   onShow() {
-    this.setLastPage(true)
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: true
+      }
+    })
   },
   methods: {
-    ...mapMutations("App", ["setLastPage"]),
+    ...mapMutations(["setState"]),
     ...mapMutations("Info", ["setInfo"]),
     async getAuthLogin() {
       uni.showLoading({
@@ -186,10 +191,20 @@ export default {
     return false
   },
   onHide() {
-    this.setLastPage(false)
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: false
+      }
+    })
   },
   onUnload() {
-    this.setLastPage(false)
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: false
+      }
+    })
   }
 }
 </script>

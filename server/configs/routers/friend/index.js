@@ -56,6 +56,7 @@ routers.get("search", async (ctx) => {
       data
     })
   } catch (err) {
+    console.log(err)
     ctx.body = ctx.echo("error", {
       content: "搜索失败"
     })
@@ -244,7 +245,7 @@ routers.put("set/:shield", async (ctx) => {
     }
     const [_, info] = await ctx.db.execute(sql, [1])
     info.background = JSON.parse(info.background)
-    info.quiet = info.quiet ? info.quiet.split(',') : []
+    info.quiet = info.quiet ? info.quiet.split(",") : []
     if (global.user[friendId]?.channel && shield !== "quiet") {
       global.user[friendId].channel.push({
         type: "update",

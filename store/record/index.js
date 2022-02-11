@@ -57,6 +57,11 @@ export default {
       }
       user_record[friendId].info = friends_record_info[friendId]
       uni.setStorageSync(`user-record-${myId}`, user_record)
+      const {
+        avatar,
+        background: { url }
+      } = info
+      this.commit("Cache/handlerCacheImage", { avatar, url })
     },
     // 处理发送的消息，展示在列表
     handlerFriendChatRecord(state, { last_chat_time, record }) {
@@ -238,7 +243,12 @@ export default {
       state.last_chat_time = ""
       state.update_chat_time = ""
       state.last_page = false
-      this.commit("Info/setChatFriendId", null)
+      this.commit("setState", {
+        module: "Info",
+        state: {
+          chat_friend_id: null
+        }
+      })
     },
     //退出登录后清除当前用户的记录信息
     clearRecord(state) {
@@ -327,7 +337,12 @@ export default {
       }
       if (update_friend) {
         this.dispatch("App/getFriendList")
-        this.commit("Info/setInfoType", "friend")
+        this.commit("setState", {
+          module: "Info",
+          state: {
+            info_type: "friend"
+          }
+        })
       }
       uni.setStorageSync(`user-record-${myId}`, user_record)
     },

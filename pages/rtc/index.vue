@@ -189,7 +189,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Rtc", ["setState"]),
+    ...mapMutations(["setState"]),
     windowing() {
       this.$u.route({
         type: "navigateBack"
@@ -203,11 +203,12 @@ export default {
     },
     tapCtrl(func, mode) {
       if (mode) {
-        this.setState([
-          {
+        this.setState({
+          module: "Rtc",
+          state: {
             [mode]: !this[mode]
           }
-        ])
+        })
       }
     },
     ctrlMicroPhone() {},

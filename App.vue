@@ -10,7 +10,8 @@ export default {
   data() {
     return {
       ws: null,
-      id: null
+      id: null,
+      ti: null
     }
   },
   computed: {
@@ -18,18 +19,20 @@ export default {
     ...mapState("Info", ["info"])
   },
   onLaunch() {
-    uni.getSystemInfo({
-      success: (res) => {
-        const { statusBarHeight } = res
-        this.setStatusBarHeight(statusBarHeight)
-      }
+    const { statusBarHeight, screenHeight } = uni.getSystemInfoSync()
+    this.setState({
+      module: "App",
+      state: (state) => ({
+        statusBarHeight,
+        infoBoxHeight: state.infoBoxHeight + statusBarHeight
+      })
     })
     let user_info = uni.getStorageSync("user-info")
     if (user_info) {
       this.init(user_info.id, user_info)
       setTimeout(() => {
-		  plus.navigator.closeSplashscreen()
-	  }, 200)
+        plus.navigator.closeSplashscreen()
+      }, 200)
     } else {
       this.$u.route({
         type: "redirectTo",
@@ -40,16 +43,48 @@ export default {
         plus.navigator.closeSplashscreen()
       }, 500)
     }
+    uni.onWindowResize(({ size: { windowHeight } }) => {
+      if (this.ti) {
+        clearTimeout(this.ti)
+      }
+      this.ti = setTimeout(() => {
+        let isCover
+        if (windowHeight < 650) {
+          isCover = true
+        } else if (screenHeight <= windowHeight) {
+          isCover = false
+        } else {
+          return
+        }
+        this.setState({
+          module: "App",
+          state: {
+            isCover
+          }
+        })
+      }, 300)
+    })
   },
   onShow() {
-    this.setIsBackground(false)
+    this.setState({
+      module: "App",
+      state: {
+        isBackground: false
+      }
+    })
   },
   onHide() {
-    this.setIsBackground(true)
+    this.setState({
+      module: "App",
+      state: {
+        isBackground: true
+      }
+    })
   },
   methods: {
-    ...mapMutations("App", ["setNetworkStatus", "setStatusBarHeight", "setIsBackground", "getRecordFriendList"]),
-    ...mapMutations("Info", ["setInfo", "setFriendTips", "setInfoType"]),
+    ...mapMutations(["setState"]),
+    ...mapMutations("App", ["getRecordFriendList"]),
+    ...mapMutations("Info", ["setInfo"]),
     ...mapMutations("Record", [
       "handlerNewFriendsRecord",
       "setFriendsRecordInfo",
@@ -57,26 +92,25 @@ export default {
       "handlerChatRecordList",
       "handlerErrorChatRecord"
     ]),
-    ...mapMutations("Rtc", ["setState"]),
     ...mapActions("App", ["getFriendList"]),
     ...mapActions("Record", ["handlerFriendsChatRecord"]),
     init(id, info) {
       this.id = id
-	  this.setInfo(info)
-	  this.connectWebSocket(id)
-	  this.initRecord(id)
+      this.setInfo(info)
+      this.connectWebSocket(id)
+      this.initRecord(id)
     },
-	initRecord(id) {
-		let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
-		this.setFriendsRecordInfo(friend_record_info)
-		let user_record = uni.getStorageSync(`user-record-${id}`) || {}
-		this.handlerChatRecordList(user_record)
-		this.getRecordFriendList(user_record)
-		this.getChatRecordList()
-		this.getApplyRecordList(user_record)
-		this.putInitInfo()
-		this.getFriendList()
-	},
+    initRecord(id) {
+      let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
+      this.setFriendsRecordInfo(friend_record_info)
+      let user_record = uni.getStorageSync(`user-record-${id}`) || {}
+      this.handlerChatRecordList(user_record)
+      this.getRecordFriendList(user_record)
+      this.getChatRecordList()
+      this.getApplyRecordList(user_record)
+      this.putInitInfo()
+      this.getFriendList()
+    },
     async putInitInfo() {
       let handlerInfo = this.deleteObjactKey(Object.assign({}, this.info), ["friends", "token", "quiet", "annoyed"])
       try {
@@ -126,16 +160,16 @@ export default {
       let json = {}
       for (let i in data) {
         if (!keys.includes(i) && !i.includes("cache")) {
-		  if (typeof data[i] === 'object') {
-			  let handler_value = {}
-			  for (let c in data[i]) {
-				  if (!c.includes("cache") && !c.includes("height")) {
-					handler_value[c] = data[i][c]
-				  }
-			  }
-			  data[i] = handler_value
-		  }
-		  json[i] = data[i]
+          if (typeof data[i] === "object") {
+            let handler_value = {}
+            for (let c in data[i]) {
+              if (!c.includes("cache") && !c.includes("height")) {
+                handler_value[c] = data[i][c]
+              }
+            }
+            data[i] = handler_value
+          }
+          json[i] = data[i]
         }
       }
       return json
@@ -147,19 +181,20 @@ export default {
           this.handlerFriendsChatRecord(record)
           break
         case ["voice", "video"].includes(type):
-          this.setState([
-            {
+          this.setState({
+            module: "Rtc",
+            state: {
               rtc_type: type,
               rtc_status: "receive",
               rtc_info: info
             },
-            () => {
+            callback: () => {
               this.$u.route({
                 url: "/pages/rtc/index",
                 animationType: "zoom-fade-out"
               })
             }
-          ])
+          })
           break
         case "chat-error":
           this.handlerErrorChatRecord({ friendId, record, extend_error })
@@ -171,7 +206,12 @@ export default {
             const { userId, info } = apply_list[i]
             if (!user_record[userId]) {
               user_record[userId] = {}
-              this.setFriendTips(true)
+              this.setState({
+                module: "Info",
+                state: {
+                  friend_tips: true
+                }
+              })
             }
             user_record[userId].new_friends_record_msg = `你好, 我是${info.name}`
             user_record[userId].status = "verify"

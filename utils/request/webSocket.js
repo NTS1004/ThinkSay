@@ -16,11 +16,21 @@ class ws {
         if (networkType === "none") {
           this.connectError = true
           this.networkStatus = false
-          store.commit("App/setNetworkStatus", false)
+          store.commit("setState", {
+            module: "App",
+            state: {
+              network_status: false
+            }
+          })
         } else {
           this.connect()
           this.networkStatus = true
-          store.commit("App/setNetworkStatus", true)
+          store.commit("setState", {
+            module: "App",
+            state: {
+              network_status: true
+            }
+          })
         }
       }
     })
@@ -34,7 +44,12 @@ class ws {
         }
       }
       this.networkStatus = isConnected
-      store.commit("App/setNetworkStatus", isConnected)
+      store.commit("setState", {
+        module: "App",
+        state: {
+          network_status: isConnected
+        }
+      })
     })
   }
   connect() {

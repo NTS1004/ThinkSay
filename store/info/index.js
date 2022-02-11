@@ -21,34 +21,18 @@ export default {
       uni.setStorageSync("user-info", info)
     },
     setFriendInfo(state, data = {}) {
-      const { cache_image } = this.state.Cache
       if (Object.keys(data).length === 0) {
         state.friend_info = {}
         state.chat_friend_id = null
         this.commit("Record/clearFriendChatRecord")
       } else {
-        const { friend_info } = state
-        state.friend_info = Object.assign({}, friend_info, data)
-        const {
-          avatar,
-          background: { url }
-        } = data
-        this.commit("Cache/handlerCacheImage", { avatar, url })
+        state.friend_info = Object.assign({}, state.friend_info, data)
       }
-    },
-    setInfoType(state, type) {
-      state.info_type = type
-    },
-    setFriendTips(state, bool) {
-      state.friend_tips = bool
-    },
-    setChatFriendId(state, friendId) {
-      state.chat_friend_id = friendId
     },
     initFriendChat(state, friendId) {
       let { friends_record_info } = this.state.Record
-      this.commit("Info/setChatFriendId", friendId)
-      this.commit("Info/setFriendInfo", friends_record_info[friendId])
+      state.chat_friend_id = friendId
+      state.friend_info = friends_record_info[friendId]
       this.commit("Record/initFriendChatRecord", friendId)
     }
   }

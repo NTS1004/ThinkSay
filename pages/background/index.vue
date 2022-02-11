@@ -35,7 +35,6 @@
 <script>
 import Header from "@/componets/Header/index.vue"
 import { mapState, mapMutations } from "vuex"
-import { funcPutMyInfo } from "@/api/info/index.js"
 import { classification, background } from "./utils/pageData.js"
 
 export default {
@@ -51,7 +50,6 @@ export default {
   },
   computed: {
     ...mapState("Info", ["info"]),
-	...mapState("Cache", ["cache_image"]),
     itemInfo() {
       return (info) => {
         let { url, position } = info
@@ -60,23 +58,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("Info", ["setInfo"]),
-    async putMyInfo(data) {
-      uni.showLoading({
-        title: "设置中..."
-      })
-      let background = JSON.stringify({
-        url: data.url,
-        top: 0
-      })
-      try {
-        const { data } = await funcPutMyInfo({ type: "background", background })
-        this.setInfo({ ...this.info, ...data })
-      } catch (err) {
-        console.log(err)
-      }
-      uni.hideLoading()
-    },
     clickTab(v) {
       this.current = v
     },
