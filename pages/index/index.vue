@@ -224,7 +224,7 @@ export default {
       this.setState({
         module: "Info",
         state: {
-          info_type: "make_friend"
+          info_type: "meet_friend"
         }
       })
       this.$u.route({

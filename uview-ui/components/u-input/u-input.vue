@@ -173,7 +173,7 @@ export default {
 		},
 		autoHeight: {
 			type: Boolean,
-			default: true
+			default: false
 		},
 		// type=select时，旋转右侧的图标，标识当前处于打开还是关闭select的状态
 		// open-打开，close-关闭

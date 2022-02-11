@@ -91,7 +91,7 @@ routers.get("apply/:id/list", async (ctx) => {
       data
     })
     if (data.length > 0) {
-      await ctx.db.execute(`UPDATE think_record SET status = 'read' WHERE friendId = ${id}`)
+      await ctx.db.execute(`UPDATE think_apply SET status = 'read' WHERE friendId = ${id}`)
     }
   } catch (err) {
     ctx.body = ctx.echo("error", {

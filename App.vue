@@ -214,7 +214,7 @@ export default {
               })
             }
             user_record[userId].new_friends_record_msg = `你好, 我是${info.name}`
-            user_record[userId].status = "verify"
+            if (!user_record[userId].status) user_record[userId].status = "verify"
             this.updateFriendInfo({ friendId: userId, info, user_record })
           }
           this.handlerNewFriendsRecord(user_record)

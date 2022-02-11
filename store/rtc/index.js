@@ -18,7 +18,7 @@ export default {
   state: default_state,
   mutations: {
     closeRtc(state) {
-      state = default_state
+      state = Object.assign(state, default_state)
     }
   }
 }

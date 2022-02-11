@@ -79,12 +79,13 @@ export default {
         }
       })
       this.$u.route({
-        url: info.status === "verify" ? "/pages/info/index" : "/pages/chat/index"
+        url: info.status === "verify" ? "/pages/info/index" : "/pages/chat/index",
+        params: info.status === "verify" ? {} : { friendId: info.id }
       })
     },
     goHome() {
       this.$u.route({
-        url: "/pages/index/index"
+        type: "navigateBack"
       })
     }
   }

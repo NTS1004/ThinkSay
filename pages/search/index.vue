@@ -104,7 +104,8 @@ export default {
     toFriendChat(info) {
       this.setFriendInfo(info)
       this.$u.route({
-        url: "/pages/chat/index"
+        url: "/pages/chat/index",
+        params: { friendId: info.id }
       })
     },
     toNewFriendInfo(info) {
@@ -113,7 +114,7 @@ export default {
         this.setState({
           module: "Info",
           state: {
-            info_type: "make_friend"
+            info_type: "meet_friend"
           }
         })
         this.$u.route({

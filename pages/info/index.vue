@@ -28,15 +28,21 @@
           <span>添加方式</span>
           <span>搜索查询</span>
         </view>
-        <view class="btn-box" v-if="info_type === 'make_friend'">
+        <view class="btn-box" v-if="info_type === 'meet_friend'">
           <u-button type="primary" class="btn" :custom-style="btnStyle('marginRight')" @tap="putFriendApply">
             添加好友
           </u-button>
           <u-button type="default" :custom-style="btnStyle('marginLeft')" @tap="goBack">取消</u-button>
         </view>
         <view class="btn-box" v-else>
-          <u-button type="primary" :custom-style="btnStyle('marginRight')" @tap="putFriendAccept"> 接受 </u-button>
-          <u-button type="error" :custom-style="btnStyle('marginLeft')" @tap="goBack">加入黑名单</u-button>
+          <u-button type="primary" :custom-style="btnStyle('marginRight')" @tap="putFriendAccept">接受</u-button>
+          <u-button
+            :type="annoyed ? 'default' : 'error'"
+            :custom-style="btnStyle('marginLeft')"
+            @tap="settingAnnoyed('annoyed', annoyed)"
+          >
+            {{ annoyed ? "移除" : "加入" }}黑名单
+          </u-button>
         </view>
       </view>
     </view>
@@ -83,17 +89,17 @@ export default {
     const { id: friendId } = this.friend_info
     this.quietList = quiet.map(Number)
     annoyed = annoyed.split(",").map(Number)
-    if (this.quietList.indexOf(friendId) !== -1) {
+    if (this.quietList.includes(friendId)) {
       this.quiet = true
       this.defaultQuiet = true
     }
-    if (annoyed.indexOf(friendId) !== -1) {
+    if (annoyed.includes(friendId)) {
       this.annoyed = true
     }
   },
   methods: {
     ...mapMutations("App", ["deleteFriend"]),
-    ...mapMutations("Info", ["setMakeFriend", "setInfo"]),
+    ...mapMutations("Info", ["setInfo"]),
     ...mapMutations("Record", ["handlerNewFriendsRecord", "setNewFriendsRecordStatus", "handlerChatRecordList"]),
     ...mapActions("App", ["getFriendList"]),
     async delFriend() {
@@ -122,12 +128,26 @@ export default {
       uni.showLoading({
         title: "发送中..."
       })
+      const { name, annoyed } = this.friend_info
       try {
-        await funcPutFriendApply({ friendId: this.friend_info.id, info: this.friend_info })
+        if (annoyed) {
+          setTimeout(() => {
+            this.$Toast(`${name}已将你拉入了黑名单╮(╯▽╰)╭`)
+          }, 200)
+        } else {
+          await funcPutFriendApply({ friendId: this.friend_info.id, info: this.friend_info })
+        }
       } catch (err) {
         console.log(err)
       }
-      uni.hideLoading()
+      if (annoyed) {
+      }
+      setTimeout(
+        () => {
+          uni.hideLoading()
+        },
+        annoyed ? 200 : 0
+      )
     },
     async putFriendAccept() {
       uni.showLoading({
@@ -146,7 +166,7 @@ export default {
     async putFriendSetShield(shield, status) {
       if (shield === "annoyed") {
         uni.showLoading({
-          title: `${status ? "加入" : "移除"}黑名单中...`
+          title: `${!status ? "加入" : "移除"}黑名单中...`
         })
       }
       try {
@@ -161,9 +181,6 @@ export default {
       if (shield === "annoyed") {
         uni.hideLoading()
       }
-    },
-    makeFriend() {
-      getApp().ws.emit({ type: "apply", friendId: this.friend_info.id })
     },
     settingQuiet(shield, status) {
       const { id: friendId } = this.friend_info

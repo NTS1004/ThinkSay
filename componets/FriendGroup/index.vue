@@ -35,7 +35,7 @@
 
 <script>
 import { funcPutFriendAccept } from "@/api/friend/index.js"
-import { mapState, mapActions } from "vuex"
+import { mapState, mapMutations } from "vuex"
 export default {
   props: {
     groupKey: {
@@ -90,7 +90,8 @@ export default {
     }
   },
   methods: {
-    async putFriendAccept(item = {}) {
+    ...mapMutations("Record", ["setNewFriendsRecordStatus"]),
+    async putFriendAccept(item) {
       uni.showLoading({
         title: "处理中..."
       })
@@ -100,7 +101,8 @@ export default {
           msg: item.msg,
           info: Object.assign({}, item, { name: this.Name(item) })
         })
-        item.status = "friend"
+        const { id, initials, index } = item
+        this.setNewFriendsRecordStatus({ friendId: id, initials, index })
       } catch (err) {
         console.log(err)
       }

@@ -37,11 +37,20 @@ export default {
     // 更新朋友信息记录
     updateFriendInfo(state, { friendId, info, user_record }) {
       const { friends_record_info } = state
+      const { initials } = state.friends_record_info[friendId] || info
+      let {
+        info: { id: myId },
+        chat_friend_id,
+        friend_info: { id: friend_id }
+      } = this.state.Info
+      const {
+        avatar,
+        background: { url }
+      } = info
+      let update_friend_id = chat_friend_id || friend_id
       friends_record_info[friendId] = Object.assign(friends_record_info[friendId] || {}, info)
       state.friends_record_info = friends_record_info
-      const { initials } = state.friends_record_info[friendId] || info
-      let chat_friend_id = this.state.Info.chat_friend_id
-      if (Number(chat_friend_id) === Number(friendId)) {
+      if (Number(update_friend_id) === Number(friendId)) {
         this.commit("Info/setFriendInfo", friends_record_info[friendId])
       }
       if (info.initials !== initials) {
@@ -51,16 +60,11 @@ export default {
           info: friends_record_info[friendId]
         })
       }
-      const { id: myId } = this.state.Info.info
       if (!user_record) {
         user_record = uni.getStorageSync(`user-record-${myId}`)
       }
       user_record[friendId].info = friends_record_info[friendId]
       uni.setStorageSync(`user-record-${myId}`, user_record)
-      const {
-        avatar,
-        background: { url }
-      } = info
       this.commit("Cache/handlerCacheImage", { avatar, url })
     },
     // 处理发送的消息，展示在列表
@@ -199,10 +203,16 @@ export default {
       state.friends_record_info = data
     },
     // 设置同意添加好友后的状态
-    setNewFriendsRecordStatus(state, { initials, index }) {
-      let new_friends_record = state.new_friends_record
+    setNewFriendsRecordStatus(state, { friendId, initials, index }) {
+      let { new_friends_record } = state
+      const { id: myId } = this.state.Info.info
+      let user_record = uni.getStorageSync(`user-record-${myId}`)
       new_friends_record[initials][index].status = "friend"
+      user_record[friendId].status = "friend"
       state.new_friends_record = new_friends_record
+      uni.setStorageSync(`user-record-${myId}`, user_record)
+      console.log(user_record)
+      console.log(myId)
     },
     // 设置当前开始聊天时间
     setLastChatTime(state, last_chat_time) {
