@@ -2,7 +2,7 @@
     "name" : "ThinkSay",
     "appid" : "__UNI__6EB7BF5",
     "description" : "",
-    "versionName" : "1.5.1",
+    "versionName" : "1.5.2",
     "versionCode" : 100,
     "transformPx" : false,
     /* 5+App特有相关 */
@@ -24,7 +24,8 @@
         /* 模块配置 */
         "modules" : {
             "VideoPlayer" : {},
-            "Share" : {}
+            "Share" : {},
+            "Push" : {}
         },
         /* 应用发布信息 */
         "distribute" : {

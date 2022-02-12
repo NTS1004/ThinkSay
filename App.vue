@@ -41,8 +41,30 @@ export default {
       })
       setTimeout(() => {
         plus.navigator.closeSplashscreen()
-      }, 500)
+      }, 600)
     }
+    plus.push.addEventListener(
+      "click",
+      (msg) => {
+        console.log(msg)
+      },
+      false
+    )
+    plus.push.addEventListener(
+      "receive",
+      (msg) => {
+        console.log(msg)
+      },
+      false
+    )
+    plus.push.getClientInfoAsync(
+      (info) => {
+        console.log(info)
+      },
+      (err) => {
+        console.log(err)
+      }
+    )
     uni.onWindowResize(({ size: { windowHeight } }) => {
       if (this.ti) {
         clearTimeout(this.ti)
