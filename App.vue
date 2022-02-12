@@ -41,7 +41,7 @@ export default {
       })
       setTimeout(() => {
         plus.navigator.closeSplashscreen()
-      }, 600)
+      }, 200)
     }
     plus.push.addEventListener(
       "click",
