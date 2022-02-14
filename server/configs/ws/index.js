@@ -1,8 +1,5 @@
-const axios = require("axios")
-const db = require("../db")
-const global = require("../global")
-
-module.exports = (wss) => {
+module.exports = (wss, global) => {
+  const { axios } = global
   wss.on("connection", async (ws, req) => {
     let id = req.url.split("=")[1]
     if (!global.user[id]) global.user[id] = {}
@@ -20,13 +17,14 @@ module.exports = (wss) => {
             type
           })
         )
-      }
-      if (type === "chat") {
+      } else if (type === "chat") {
         let send_err
         if (!global.user[id].load) {
-          let [friend_info] = await db.execute(
-            `SELECT FIND_IN_SET('${id}', friends) friend, FIND_IN_SET('${id}', annoyed) annoyed FROM think_user WHERE id = ${friendId}`
-          )
+          const {
+            data: [friend_info]
+          } = await axios.get(`http://localhost:1437/friend/${id}/search`, {
+            params: { id: friendId }
+          })
           const { friend, annoyed } = friend_info
           if (!friend) {
             send_err = "friend"
@@ -65,8 +63,7 @@ module.exports = (wss) => {
             })
           )
         }
-      }
-      if (["voice", "video"].includes(type)) {
+      } else if (["voice", "video"].includes(type)) {
         const { ws: friend_ws } = global.user[friendId]
         if (global.user[friendId]?.channel) {
           friend_ws.send(

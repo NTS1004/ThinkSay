@@ -1,5 +1,4 @@
 const router = require("koa-router")
-const global = require("../../global")
 const routers = new router()
 
 let field = `id, account, name, avatar, background, initials, pinyin, quiet, annoyed`

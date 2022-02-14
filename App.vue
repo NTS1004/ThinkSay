@@ -10,15 +10,15 @@ export default {
   data() {
     return {
       ws: null,
-      id: null,
+	  clientId: null,
       ti: null
     }
   },
   computed: {
-    ...mapState("App", ["lastPage"]),
+    ...mapState("App", ["ws_connect"]),
     ...mapState("Info", ["info"])
   },
-  onLaunch() {
+  async onLaunch() {
     const { statusBarHeight, screenHeight } = uni.getSystemInfoSync()
     this.setState({
       module: "App",
@@ -43,27 +43,19 @@ export default {
         plus.navigator.closeSplashscreen()
       }, 200)
     }
-    plus.push.addEventListener(
-      "click",
-      (msg) => {
-        console.log(msg)
-      },
-      false
-    )
+    // plus.push.addEventListener(
+    //   "click",
+    //   (msg) => {
+    //     console.log(msg)
+    //   },
+    //   false
+    // )
     plus.push.addEventListener(
       "receive",
-      (msg) => {
-        console.log(msg)
+      ({ payload }) => {
+        const { pages, params } = payload
       },
       false
-    )
-    plus.push.getClientInfoAsync(
-      (info) => {
-        console.log(info)
-      },
-      (err) => {
-        console.log(err)
-      }
     )
     uni.onWindowResize(({ size: { windowHeight } }) => {
       if (this.ti) {
@@ -117,7 +109,6 @@ export default {
     ...mapActions("App", ["getFriendList"]),
     ...mapActions("Record", ["handlerFriendsChatRecord"]),
     init(id, info) {
-      this.id = id
       this.setInfo(info)
       this.connectWebSocket(id)
       this.initRecord(id)
@@ -130,13 +121,16 @@ export default {
       this.getRecordFriendList(user_record)
       this.getChatRecordList()
       this.getApplyRecordList(user_record)
-      this.putInitInfo()
+	  plus.push.getClientInfoAsync(({ clientid: clientId }) => {
+		this.putInitInfo(clientId)
+	  })
       this.getFriendList()
     },
-    async putInitInfo() {
+    async putInitInfo(clientId) {
       let handlerInfo = this.deleteObjactKey(Object.assign({}, this.info), ["friends", "token", "quiet", "annoyed"])
+	  console.log(clientId)
       try {
-        await funcPutInitInfo({ info: handlerInfo })
+        await funcPutInitInfo({ info: Object.assign({}, handlerInfo, { clientId }) })
       } catch (err) {
         console.log(err)
       }
@@ -223,7 +217,7 @@ export default {
           break
         case "apply":
           if (!apply_list) apply_list = [{ userId: friendId, info }]
-          let user_record = uni.getStorageSync(`user-record-${this.id}`) || {}
+          let user_record = uni.getStorageSync(`user-record-${this.info.id}`) || {}
           for (let i = 0; i < apply_list.length; i++) {
             const { userId, info } = apply_list[i]
             if (!user_record[userId]) {

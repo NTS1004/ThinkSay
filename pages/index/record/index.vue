@@ -14,7 +14,7 @@
         </view>
         <view class="itemBody">
           <view class="itemHead">
-            <b class="friendName">{{ friends_record_info[item.id].name }}</b>
+            <b class="friendName">{{ Name(item) }}</b>
             <span class="openTime">{{ hander_charTime(item.chatTime) }}</span>
           </view>
           <view class="itemBottom">
@@ -36,14 +36,21 @@ export default {
     Avatar() {
       return ({ id }) => {
         const { friends_record_info, cache_image } = this
-        let record_avatar = friends_record_info[id].avatar
-        return cache_image[record_avatar] || record_avatar
+        let record_avatar = friends_record_info[id]?.avatar
+        return cache_image[record_avatar] || record_avatar || ""
       }
     },
+	Name() {
+	   return ({ id }) => {
+		   const { friends_record_info } = this
+		   let name = friends_record_info[id]?.name
+		   return name || ""
+	   }
+	},
     message() {
       return (item) => {
         let message
-        const { msg, tip, name } = item
+        const { msg, tip } = item
         message = msg || tip
         return message
       }

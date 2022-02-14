@@ -3,6 +3,7 @@ import { funcGetFriendList } from "@/api/friend/index.js"
 export default {
   namespaced: true,
   state: {
+	ws_connect: false,
     network_status: true,
     friend_data: {},
     statusBarHeight: 0,

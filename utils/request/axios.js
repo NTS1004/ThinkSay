@@ -29,7 +29,11 @@ axios.interceptors.request.use((config) => {
     }
   }
   return config
-})
+},
+(error) => {
+  throw error
+}
+)
 
 axios.interceptors.response.use(
   (response) => {
