@@ -16,7 +16,7 @@ export default {
   },
   computed: {
     ...mapState("App", ["ws_connect"]),
-    ...mapState("Info", ["info"])
+    ...mapState("Info", ["info", "chat_friend_id"])
   },
   async onLaunch() {
     const { statusBarHeight, screenHeight } = uni.getSystemInfoSync()
@@ -43,13 +43,6 @@ export default {
         plus.navigator.closeSplashscreen()
       }, 200)
     }
-    // plus.push.addEventListener(
-    //   "click",
-    //   (msg) => {
-    //     console.log(msg)
-    //   },
-    //   false
-    // )
     plus.push.addEventListener(
       "receive",
       ({ payload }) => {
@@ -111,9 +104,10 @@ export default {
     init(id, info) {
       this.setInfo(info)
       this.connectWebSocket(id)
-      this.initRecord(id)
+      this.initRequest(id)
     },
-    initRecord(id) {
+    initRequest(id) {
+	  this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })
       let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
       this.setFriendsRecordInfo(friend_record_info)
       let user_record = uni.getStorageSync(`user-record-${id}`) || {}
@@ -128,7 +122,6 @@ export default {
     },
     async putInitInfo(clientId) {
       let handlerInfo = this.deleteObjactKey(Object.assign({}, this.info), ["friends", "token", "quiet", "annoyed"])
-	  console.log(clientId)
       try {
         await funcPutInitInfo({ info: Object.assign({}, handlerInfo, { clientId }) })
       } catch (err) {

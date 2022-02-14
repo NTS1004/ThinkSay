@@ -500,26 +500,21 @@ export default {
     }
   },
   onShow() {
-    if (this.load) {
-      this.setState({
-        module: "Info",
-        state: {
-          chat_friend_id: this.friendId
-        }
-      })
-    }
+  	getApp().ws.emit({ type: "setChatFriendId", friendId: this.friendId })
   },
   onHide() {
+	getApp().ws.emit({ type: "setChatFriendId" })
     this.saveFriendChatRecord(this.friendId)
-    this.setState({
-      module: "Info",
-      state: {
-        chat_friend_id: null
-      }
-    })
   },
   onUnload() {
+	getApp().ws.emit({ type: "setChatFriendId" })
     this.saveFriendChatRecord(this.friendId)
+	this.setState({
+	  module: "Info",
+	  state: {
+	    chat_friend_id: ""
+	  }
+	})
   }
 }
 </script>

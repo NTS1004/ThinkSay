@@ -34,17 +34,17 @@ export default {
     ...mapState("Record", ["chat_record_list", "friends_record_info"]),
     ...mapState("Cache", ["cache_image"]),
     Avatar() {
-      return ({ id }) => {
+      return ({ id, avatar }) => {
         const { friends_record_info, cache_image } = this
         let record_avatar = friends_record_info[id]?.avatar
-        return cache_image[record_avatar] || record_avatar || ""
+        return cache_image[record_avatar] || record_avatar || avatar || ""
       }
     },
 	Name() {
-	   return ({ id }) => {
+	   return ({ id, name }) => {
 		   const { friends_record_info } = this
-		   let name = friends_record_info[id]?.name
-		   return name || ""
+		   let info_name = friends_record_info[id]?.name
+		   return info_name || name || ""
 	   }
 	},
     message() {

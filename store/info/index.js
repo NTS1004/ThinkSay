@@ -5,7 +5,7 @@ export default {
     friend_info: {},
     info_type: "",
     friend_tips: false,
-    chat_friend_id: null
+    chat_friend_id: ""
   },
   mutations: {
     setInfo(state, info) {
@@ -23,7 +23,7 @@ export default {
     setFriendInfo(state, data = {}) {
       if (Object.keys(data).length === 0) {
         state.friend_info = {}
-        state.chat_friend_id = null
+        state.chat_friend_id = ""
         this.commit("Record/clearFriendChatRecord")
       } else {
         state.friend_info = Object.assign({}, state.friend_info, data)

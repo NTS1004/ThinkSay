@@ -1,5 +1,5 @@
 module.exports = (wss, global) => {
-  const { axios } = global
+  const { axios, push } = global
   wss.on("connection", async (ws, req) => {
     let id = req.url.split("=")[1]
     if (!global.user[id]) global.user[id] = {}
@@ -34,7 +34,15 @@ module.exports = (wss, global) => {
         }
         if (!send_err) {
           if (global.user[friendId]?.channel) {
-            const { ws: friend_ws } = global.user[friendId]
+            const {
+              chat_friend_id,
+              info: { name, avatar }
+            } = global.user[id]
+            const {
+              ws: friend_ws,
+              info: { clientId }
+            } = global.user[friendId]
+            const { msg } = record
             friend_ws.send(
               JSON.stringify({
                 type,
@@ -46,6 +54,17 @@ module.exports = (wss, global) => {
                 }
               })
             )
+            if (chat_friend_id !== friendId) {
+              push.send({
+                info: { name, avatar },
+                msg,
+                payload: {
+                  pages: "/pages/chat/index",
+                  params: { friendId: id }
+                },
+                cid: [clientId]
+              })
+            }
           } else {
             await axios.post(`http://localhost:1437/record/chat/${friendId}/save`, record)
           }
@@ -73,6 +92,8 @@ module.exports = (wss, global) => {
             })
           )
         }
+      } else if (type === "setChatFriendId") {
+        global.user[id].chat_friend_id = friendId || ""
       }
       if (channel.length) {
         ws.send(JSON.stringify(channel))

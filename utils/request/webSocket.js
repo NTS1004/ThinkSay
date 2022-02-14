@@ -69,7 +69,7 @@ class ws {
 		  }
 	  })
       if (this.connectError) {
-        getApp().initRecord(getApp().id)
+        getApp().initRequest(getApp().id)
         this.connectError = false
       }
       this.is_click_close = false
