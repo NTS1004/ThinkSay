@@ -75,7 +75,9 @@ routers.post("chat/:friendId/save", async (ctx) => {
 })
 
 routers.get("apply/:id/list", async (ctx) => {
+  const { user, push } = global
   const { id } = ctx.params
+  const { clientId } = user[id].info
   try {
     let data = await ctx.db.execute(
       `SELECT ${filed} FROM think_apply a LEFT JOIN think_user b ON a.userId = b.id WHERE status = 'unread' AND friendId = ${id}`
@@ -91,6 +93,17 @@ routers.get("apply/:id/list", async (ctx) => {
       data
     })
     if (data.length > 0) {
+      const {
+        info: { name, avatar }
+      } = data[data.length - 1]
+      push.send({
+        info: { name, avatar },
+        msg: "请求添加你为好友",
+        payload: {
+          pages: "/pages/new-friends/index"
+        },
+        cid: [clientId]
+      })
       await ctx.db.execute(`UPDATE think_apply SET status = 'read' WHERE friendId = ${id}`)
     }
   } catch (err) {

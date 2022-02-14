@@ -19,6 +19,10 @@ export default {
     ...mapState("Info", ["info", "chat_friend_id"])
   },
   async onLaunch() {
+	plus.push.getClientInfoAsync(({ clientid: clientId }) => {
+		this.clientId = clientId
+		this.initRequest()
+	})
     const { statusBarHeight, screenHeight } = uni.getSystemInfoSync()
     this.setState({
       module: "App",
@@ -47,6 +51,7 @@ export default {
       "receive",
       ({ payload }) => {
         const { pages, params } = payload
+		console.log(payload)
       },
       false
     )
@@ -72,22 +77,6 @@ export default {
       }, 300)
     })
   },
-  onShow() {
-    this.setState({
-      module: "App",
-      state: {
-        isBackground: false
-      }
-    })
-  },
-  onHide() {
-    this.setState({
-      module: "App",
-      state: {
-        isBackground: true
-      }
-    })
-  },
   methods: {
     ...mapMutations(["setState"]),
     ...mapMutations("App", ["getRecordFriendList"]),
@@ -104,10 +93,12 @@ export default {
     init(id, info) {
       this.setInfo(info)
       this.connectWebSocket(id)
-      this.initRequest(id)
     },
     initRequest(id) {
-	  this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })
+	  if (this.ws_connect) {
+		this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })  
+	  }
+	  this.putInitInfo(this.clientId)
       let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
       this.setFriendsRecordInfo(friend_record_info)
       let user_record = uni.getStorageSync(`user-record-${id}`) || {}
@@ -115,9 +106,6 @@ export default {
       this.getRecordFriendList(user_record)
       this.getChatRecordList()
       this.getApplyRecordList(user_record)
-	  plus.push.getClientInfoAsync(({ clientid: clientId }) => {
-		this.putInitInfo(clientId)
-	  })
       this.getFriendList()
     },
     async putInitInfo(clientId) {
@@ -242,7 +230,23 @@ export default {
           break
       }
     }
-  }
+  },
+  onShow() {
+    this.setState({
+      module: "App",
+      state: {
+        isBackground: false
+      }
+    })
+  },
+  onHide() {
+    this.setState({
+      module: "App",
+      state: {
+        isBackground: true
+      }
+    })
+  },
 }
 </script>
 
