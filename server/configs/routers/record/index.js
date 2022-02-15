@@ -101,7 +101,7 @@ routers.get("apply/:id/list", async (ctx) => {
         info: { name, avatar },
         msg: "请求添加你为好友",
         payload: {
-          pages: "/pages/new-friends/index"
+          page: "/pages/new-friends/index"
         },
         cid: [clientId]
       })

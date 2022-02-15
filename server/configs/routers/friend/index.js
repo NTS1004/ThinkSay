@@ -107,7 +107,7 @@ routers.put("apply", async (ctx) => {
           info: { name, avatar },
           msg: `请求添加你为好友`,
           payload: {
-            pages: "/pages/new-friends/index"
+            page: "/pages/new-friends/index"
           },
           cid: [friend_clientId]
         })
@@ -179,7 +179,7 @@ routers.put("apply", async (ctx) => {
         info: { name: friend_info.name, avatar: friend_info.avatar },
         msg: `你已添加了${friend_info.name}，现在可以开始聊天了。`,
         payload: {
-          pages: "/pages/chat/index",
+          page: "/pages/chat/index",
           params: { friendId }
         },
         cid: [clientId]
@@ -227,7 +227,7 @@ routers.put("accept", async (ctx) => {
         info: { name, avatar },
         msg: "我通过了你的朋友申请，现在我们可以开始聊天了。",
         payload: {
-          pages: "/pages/chat/index",
+          page: "/pages/chat/index",
           params: { friendId: id }
         },
         cid: [friend_clientId]
@@ -260,7 +260,7 @@ routers.put("accept", async (ctx) => {
       info: { name: friend_info.name, avatar: friend_info.avatar },
       msg: `你已添加了${friend_info.name}，现在可以开始聊天了。`,
       payload: {
-        pages: "/pages/chat/index",
+        page: "/pages/chat/index",
         params: { friendId }
       },
       cid: [clientId]

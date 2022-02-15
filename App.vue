@@ -14,7 +14,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("App", ["ws_connect"]),
+    ...mapState("App", ["ws_connect", "lastPage"]),
     ...mapState("Info", ["info", "chat_friend_id"])
   },
   async onLaunch() {
@@ -46,8 +46,12 @@ export default {
     plus.push.addEventListener(
       "receive",
       ({ payload }) => {
-        const { pages, params } = payload
-        console.log(payload)
+        const { page, params = {} } = payload
+        this.$u.route({
+          type: this.lastPage ? "navigateTo" : "redirectTo",
+          url: page,
+          params
+        })
       },
       false
     )

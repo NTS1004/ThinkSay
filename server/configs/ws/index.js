@@ -58,7 +58,7 @@ module.exports = (wss, global) => {
                 info: { name, avatar },
                 msg,
                 payload: {
-                  pages: "/pages/chat/index",
+                  page: "/pages/chat/index",
                   params: { friendId: id }
                 },
                 cid: [friend_clientId]
