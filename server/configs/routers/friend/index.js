@@ -85,18 +85,30 @@ routers.delete("delete", async (ctx) => {
 })
 
 routers.put("apply", async (ctx) => {
+  const { user, push } = global
   const { id } = ctx.params
-  const { friendId, info } = ctx.request.body
+  const { friendId, info: friend_info } = ctx.request.body
+  const { info } = user[id]
+  const { name, avatar, clientId } = info
   try {
     let data = await ctx.db.execute(
       `SELECT ${field}, friends FROM think_user WHERE FIND_IN_SET(${friendId}, friends) AND id = ${id}`
     )
     if (data.length === 0) {
       if (global.user[friendId]?.channel) {
+        const { clientId: friend_clientId } = user[friendId].info
         global.user[friendId].channel.push({
           type: "apply",
           friendId: id,
-          info: global.user[id].info
+          info
+        })
+        push.send({
+          info: { name, avatar },
+          msg: `请求添加你为好友`,
+          payload: {
+            pages: "/pages/new-friends/index"
+          },
+          cid: [friend_clientId]
         })
       } else {
         let [apply_data] = await ctx.db.execute(
@@ -120,8 +132,8 @@ routers.put("apply", async (ctx) => {
         `UPDATE think_user SET friends = CONCAT(friends, IF(friends,",${id}","${id}")) WHERE id = ${friendId}`
       )
       let record = {
-        msg: `你好, 我是${global.user[id].info.name}`,
-        tips: [`${global.user[id].info.name}把你删了又把你加了回来 ╮(╯-╰)╭`],
+        msg: `你好, 我是${info.name}`,
+        tips: [`${info.name}把你删了又把你加了回来 ╮(╯-╰)╭`],
         chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
       }
       if (!global.user[friendId]?.channel) {
@@ -134,7 +146,7 @@ routers.put("apply", async (ctx) => {
           type: "chat",
           record: {
             [id]: {
-              info: global.user[id].info,
+              info,
               record: [record]
             }
           }
@@ -149,10 +161,10 @@ routers.put("apply", async (ctx) => {
         type: "chat",
         record: {
           [friendId]: {
-            info,
+            info: friend_info,
             record: [
               {
-                tips: [`你已添加了${info.name}，现在可以开始聊天了。`],
+                tips: [`你已添加了${friend_info.name}，现在可以开始聊天了。`],
                 chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
               }
             ],
@@ -160,6 +172,15 @@ routers.put("apply", async (ctx) => {
             update: true
           }
         }
+      })
+      push.send({
+        info: { name: friend_info.name, avatar: friend_info.avatar },
+        msg: `你已添加了${friend_info.name}，现在可以开始聊天了。`,
+        payload: {
+          pages: "/pages/chat/index",
+          params: { friendId }
+        },
+        cid: [clientId]
       })
     }
     ctx.body = ctx.echo("success", "已发送")
@@ -172,8 +193,11 @@ routers.put("apply", async (ctx) => {
 })
 
 routers.put("accept", async (ctx) => {
+  const { user, push } = global
   const { id } = ctx.params
-  let { friendId, msg, info } = ctx.request.body
+  let { friendId, msg, info: friend_info } = ctx.request.body
+  const { info } = user[id]
+  const { name, avatar, clientId } = info
   try {
     let sql = [
       `UPDATE think_user SET friends = CONCAT(friends, IF(friends,",${friendId}","${friendId}")) WHERE id = ${id}`,
@@ -181,19 +205,29 @@ routers.put("accept", async (ctx) => {
     ]
     await ctx.db.execute(sql)
     let record = {
-      msg: "我通过了你的朋友验证请求，现在我们可以开始聊天了。",
+      msg: "我通过了你的朋友申请，现在我们可以开始聊天了。",
       chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
     }
     if (global.user[friendId]?.channel) {
+      const { clientId: friend_clientId } = user[friendId].info
       global.user[friendId].channel.push({
         type: "chat",
         record: {
           [id]: {
-            info: global.user[id].info,
+            info,
             record: [record],
             update: true
           }
         }
+      })
+      push.send({
+        info: { name, avatar },
+        msg: "我通过了你的朋友申请，现在我们可以开始聊天了。",
+        payload: {
+          pages: "/pages/chat/index",
+          params: { friendId: id }
+        },
+        cid: [friend_clientId]
       })
     } else {
       await ctx.axios.post(`http://localhost:1437/record/chat/${friendId}/save`, {
@@ -207,7 +241,7 @@ routers.put("accept", async (ctx) => {
         [friendId]: {
           record: [
             {
-              info,
+              info: friend_info,
               msg,
               tips: ["以上是打招呼的内容", `你已添加了${info.name}，现在可以开始聊天了。`],
               chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
@@ -217,6 +251,15 @@ routers.put("accept", async (ctx) => {
           update: true
         }
       }
+    })
+    push.send({
+      info: { name: friend_info.name, avatar: friend_info.avatar },
+      msg: `你已添加了${friend_info.name}，现在可以开始聊天了。`,
+      payload: {
+        pages: "/pages/chat/index",
+        params: { friendId }
+      },
+      cid: [clientId]
     })
     ctx.body = ctx.echo("success", "已发送")
   } catch (err) {

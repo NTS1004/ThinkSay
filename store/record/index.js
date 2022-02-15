@@ -275,7 +275,7 @@ export default {
       let chat_friend_id = this.state.Info.chat_friend_id
       let update_friend
       for (let i in data) {
-        let { info, record = [], badge_count = 0, update } = data[i]
+        let { info, record = [], badge_count = 1, update } = data[i]
         if (!user_record[i]) {
           user_record[i] = {}
           user_record[i].info = info

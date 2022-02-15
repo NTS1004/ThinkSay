@@ -10,8 +10,7 @@ export default {
   data() {
     return {
       ws: null,
-	  clientId: null,
-      ti: null
+      clientId: null
     }
   },
   computed: {
@@ -19,10 +18,6 @@ export default {
     ...mapState("Info", ["info", "chat_friend_id"])
   },
   async onLaunch() {
-	plus.push.getClientInfoAsync(({ clientid: clientId }) => {
-		this.clientId = clientId
-		this.initRequest()
-	})
     const { statusBarHeight, screenHeight } = uni.getSystemInfoSync()
     this.setState({
       module: "App",
@@ -38,20 +33,21 @@ export default {
         plus.navigator.closeSplashscreen()
       }, 200)
     } else {
-      this.$u.route({
-        type: "redirectTo",
+      uni.redirectTo({
         url: "/pages/login/index",
-        animationType: "none"
+        animationType: "none",
+        success: () => {
+          setTimeout(() => {
+            plus.navigator.closeSplashscreen()
+          }, 200)
+        }
       })
-      setTimeout(() => {
-        plus.navigator.closeSplashscreen()
-      }, 200)
     }
     plus.push.addEventListener(
       "receive",
       ({ payload }) => {
         const { pages, params } = payload
-		console.log(payload)
+        console.log(payload)
       },
       false
     )
@@ -93,19 +89,27 @@ export default {
     init(id, info) {
       this.setInfo(info)
       this.connectWebSocket(id)
+      this.initRequest()
     },
     initRequest(id) {
-	  if (this.ws_connect) {
-		this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })  
-	  }
-	  this.putInitInfo(this.clientId)
+      if (this.ws_connect) {
+        this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })
+      }
       let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
       this.setFriendsRecordInfo(friend_record_info)
       let user_record = uni.getStorageSync(`user-record-${id}`) || {}
+      if (!this.clientId) {
+        plus.push.getClientInfoAsync(({ clientid: clientId }) => {
+          this.putInitInfo(clientId)
+          this.getApplyRecordList(user_record)
+        })
+      } else {
+        this.putInitInfo(this.clientId)
+        this.getApplyRecordList(user_record)
+      }
       this.handlerChatRecordList(user_record)
       this.getRecordFriendList(user_record)
       this.getChatRecordList()
-      this.getApplyRecordList(user_record)
       this.getFriendList()
     },
     async putInitInfo(clientId) {
@@ -172,7 +176,7 @@ export default {
       return json
     },
     receive(data) {
-      const { type, friendId, info, record, apply_list, extend_error } = data
+      let { type, friendId, info, record, apply_list, extend_error } = data
       switch (type) {
         case "chat":
           this.handlerFriendsChatRecord(record)
@@ -246,7 +250,7 @@ export default {
         isBackground: true
       }
     })
-  },
+  }
 }
 </script>
 

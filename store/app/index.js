@@ -3,14 +3,14 @@ import { funcGetFriendList } from "@/api/friend/index.js"
 export default {
   namespaced: true,
   state: {
-	ws_connect: false,
+    ws_connect: false,
     network_status: true,
     friend_data: {},
     statusBarHeight: 0,
     lastPage: true,
     isBackground: false,
     infoBoxHeight: 540,
-	isCover: false
+    isCover: false
   },
   mutations: {
     setFriendData(state, data) {

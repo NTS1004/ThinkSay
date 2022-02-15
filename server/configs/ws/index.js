@@ -8,7 +8,7 @@ module.exports = (wss, global) => {
     global.user[id].load = false
 
     ws.on("message", async (message) => {
-      const { channel } = global.user[id]
+      const { channel, info } = global.user[id]
       let data = JSON.parse(message.toString())
       const { type, friendId, record, extend_error } = data
       if (type === "ping") {
@@ -34,13 +34,11 @@ module.exports = (wss, global) => {
         }
         if (!send_err) {
           if (global.user[friendId]?.channel) {
-            const {
-              chat_friend_id,
-              info: { name, avatar }
-            } = global.user[id]
+            const { name, avatar } = info
             const {
               ws: friend_ws,
-              info: { clientId }
+              info: { clientId: friend_clientId },
+              chat_friend_id: friendId_chat_friend_id
             } = global.user[friendId]
             const { msg } = record
             friend_ws.send(
@@ -48,13 +46,13 @@ module.exports = (wss, global) => {
                 type,
                 record: {
                   [id]: {
-                    info: global.user[id].info,
+                    info,
                     record: [record]
                   }
                 }
               })
             )
-            if (chat_friend_id !== friendId) {
+            if (friendId_chat_friend_id !== id) {
               push.send({
                 info: { name, avatar },
                 msg,
@@ -62,7 +60,7 @@ module.exports = (wss, global) => {
                   pages: "/pages/chat/index",
                   params: { friendId: id }
                 },
-                cid: [clientId]
+                cid: [friend_clientId]
               })
             }
           } else {
@@ -88,7 +86,7 @@ module.exports = (wss, global) => {
           friend_ws.send(
             JSON.stringify({
               type,
-              info: global.user[id].info
+              info
             })
           )
         }
