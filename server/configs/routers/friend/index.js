@@ -103,6 +103,7 @@ routers.put("apply", async (ctx) => {
           info
         })
         push.send({
+          notify_id: id,
           info: { name, avatar },
           msg: `请求添加你为好友`,
           payload: {
@@ -174,6 +175,7 @@ routers.put("apply", async (ctx) => {
         }
       })
       push.send({
+        notify_id: friendId,
         info: { name: friend_info.name, avatar: friend_info.avatar },
         msg: `你已添加了${friend_info.name}，现在可以开始聊天了。`,
         payload: {
@@ -221,6 +223,7 @@ routers.put("accept", async (ctx) => {
         }
       })
       push.send({
+        notify_id: id,
         info: { name, avatar },
         msg: "我通过了你的朋友申请，现在我们可以开始聊天了。",
         payload: {
@@ -253,6 +256,7 @@ routers.put("accept", async (ctx) => {
       }
     })
     push.send({
+      notify_id: friendId,
       info: { name: friend_info.name, avatar: friend_info.avatar },
       msg: `你已添加了${friend_info.name}，现在可以开始聊天了。`,
       payload: {

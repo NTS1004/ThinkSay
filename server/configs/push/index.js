@@ -32,7 +32,7 @@ class push {
       console.log(err)
     }
   }
-  async send({ info, msg, payload, cid }) {
+  async send({ info, msg, payload, cid, notify_id }) {
     try {
       let path = "push/single/cid"
       const body = {
@@ -45,6 +45,7 @@ class push {
         },
         push_message: {
           notification: {
+            notify_id,
             title: info.name,
             body: msg,
             logo_url: info.avatar,

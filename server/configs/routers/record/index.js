@@ -94,9 +94,10 @@ routers.get("apply/:id/list", async (ctx) => {
     })
     if (data.length > 0) {
       const {
-        info: { name, avatar }
+        info: { id: friendId, name, avatar }
       } = data[data.length - 1]
       push.send({
+        notify_id: friendId,
         info: { name, avatar },
         msg: "请求添加你为好友",
         payload: {

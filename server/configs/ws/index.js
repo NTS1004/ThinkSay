@@ -54,6 +54,7 @@ module.exports = (wss, global) => {
             )
             if (friendId_chat_friend_id !== id) {
               push.send({
+                notify_id: friendId,
                 info: { name, avatar },
                 msg,
                 payload: {
