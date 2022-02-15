@@ -72,7 +72,7 @@ export default {
       const { previewImages } = state
       const { image_src, image_source_path, chatTime } = record
       let image = image_source_path || image_src || ""
-      let isGif = image.indexOf(".gif") !== -1
+      let isGif = image.includes(".gif")
       if (image && !isGif) {
         previewImages.set(chatTime, image)
       }
@@ -282,7 +282,7 @@ export default {
           user_record[i].badge_count = 0
         }
         const new_record = record[record.length - 1]
-        let { key, msg, tips = [], chatTime } = new_record
+        let { msg, tips = [], chatTime } = new_record
 
         // 时间逻辑
         let { update_chat_time, last_chat_time, chat_record_details } = user_record[i]
@@ -293,8 +293,7 @@ export default {
         }
         user_record[i].update_chat_time = chatTime
         // 最新记录
-        const new_tip = tips[tips.length - 1]
-        user_record[i].new_chat_record = new_record
+        user_record[i].new_chat_record = { msg, tips, chatTime }
         if (chat_friend_id == i) {
           if (msg) {
             commit("handlerFriendChatRecord", {

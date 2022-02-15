@@ -96,25 +96,28 @@ export default {
       this.initRequest()
     },
     initRequest(id) {
-      if (this.ws_connect) {
-        this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })
-      }
-      let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
-      this.setFriendsRecordInfo(friend_record_info)
-      let user_record = uni.getStorageSync(`user-record-${id}`) || {}
-      if (!this.clientId) {
-        plus.push.getClientInfoAsync(({ clientid: clientId }) => {
-          this.putInitInfo(clientId)
+      if (this.requestTi) clearTimeout(this.requestTi)
+      this.requestTi = setTimeout(() => {
+        if (this.ws_connect) {
+          this.ws.emit({ type: "setChatFriendId", friendId: this.chat_friend_id })
+        }
+        let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
+        this.setFriendsRecordInfo(friend_record_info)
+        let user_record = uni.getStorageSync(`user-record-${id}`) || {}
+        if (!this.clientId) {
+          plus.push.getClientInfoAsync(({ clientid: clientId }) => {
+            this.putInitInfo(clientId)
+            this.getApplyRecordList(user_record)
+          })
+        } else {
+          this.putInitInfo(this.clientId)
           this.getApplyRecordList(user_record)
-        })
-      } else {
-        this.putInitInfo(this.clientId)
-        this.getApplyRecordList(user_record)
-      }
-      this.handlerChatRecordList(user_record)
-      this.getRecordFriendList(user_record)
-      this.getChatRecordList()
-      this.getFriendList()
+        }
+        this.handlerChatRecordList(user_record)
+        this.getRecordFriendList(user_record)
+        this.getChatRecordList()
+        this.getFriendList()
+      }, 300)
     },
     async putInitInfo(clientId) {
       let handlerInfo = this.deleteObjactKey(Object.assign({}, this.info), ["friends", "token", "quiet", "annoyed"])
@@ -131,15 +134,16 @@ export default {
           const { record } = data[i]
           for (let o = 0; o < record.length; o++) {
             const { image_src = "" } = record[o]
-            let isBase64 = image_src.indexOf("base64") !== -1
+            let isBase64 = image_src.includes("base64")
             if (image_src && isBase64) {
               let image_source_path = await base64ToPath(image_src)
               let [_, res] = await uni.compressImage({
                 src: image_source_path,
-                quality: 20
+                quality: 60
               })
               const { tempFilePath } = res
-              record[o].image_src = await pathToBase64(tempFilePath)
+              const [_saveErr, { savedFilePath }] = await uni.saveFile({ tempFilePath })
+              record[o].image_src = savedFilePath
               record[o].image_source_path = image_source_path
             }
           }

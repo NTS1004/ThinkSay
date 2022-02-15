@@ -86,7 +86,6 @@ export default {
   .background {
     width: 100vw;
     height: 100vh;
-    background: #434343;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

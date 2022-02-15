@@ -5,7 +5,7 @@
       <slot name="right-operation"></slot>
     </view>
     <view :class="['info', preview ? 'hide' : '']" @tap.stop>
-      <view class="avatar" :style="avatar" @tap.stop="tapAvatar"></view>
+	  <image class="avatar" :src="avatar" @tap.stop="tapAvatar"></image>
       <view class="name">{{ info.name }}</view>
     </view>
     <BackgroundBox :background-info="backgroundInfo" :radius="radius" :preview="preview"></BackgroundBox>
@@ -60,7 +60,7 @@ export default {
     avatar() {
       const { cache_image } = this
       const { avatar } = this.info
-      return { backgroundImage: `url(${cache_image[avatar] || avatar})` }
+      return cache_image[avatar] || avatar
     },
     top() {
       return `${this.statusBarHeight + 10}px`

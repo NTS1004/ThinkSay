@@ -15,9 +15,7 @@ export default {
       } = info
       const { cache_image } = this.state.Cache
       state.info = info
-      if (!cache_image[avatar] || !cache_image[url]) {
-        this.commit("Cache/handlerCacheImage", { avatar, url })
-      }
+      this.commit("Cache/handlerCacheImage", { avatar, url })
       uni.setStorageSync("user-info", info)
     },
     setFriendInfo(state, data = {}) {

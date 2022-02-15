@@ -140,7 +140,7 @@ export default {
   },
   methods: {
     ...mapMutations(["setState"]),
-    ...mapMutations("Info", ["setInfo", "setFriendInfo", "handlerCacheImage"]),
+    ...mapMutations("Info", ["setInfo", "setFriendInfo"]),
     ...mapMutations("Record", ["clearRecord"]),
     async putMyInfo() {
       let type = this.ctrlIndex === 0 ? "name" : "avatar"
@@ -279,9 +279,9 @@ export default {
         this.visible = !this.tabBarHide
       }, 300)
     },
-	textPush() {
-		plus.push.createMessage("你在干嘛", ".")
-	}
+    textPush() {
+      plus.push.createMessage("你在干嘛", ".")
+    }
   },
   onHide() {
     this.setState({

@@ -74,7 +74,7 @@ export default {
           if (Number(chat_friend_id) === Number(friendId)) {
             this.commit("Info/setFriendInfo", data[i])
           }
-          this.commit("Cache/handlerCacheImage", { avatar, background })
+          this.commit("Cache/handlerCacheImage", { avatar, url: background.url })
           user_record[friendId].status = "friend"
         }
         user_record.friend_data = friend_data

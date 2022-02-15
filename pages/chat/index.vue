@@ -148,7 +148,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("App", ["statusBarHeight", "network_status"]),
+    ...mapState("App", ["statusBarHeight", "network_status", "ws_connect"]),
     ...mapState("Info", ["info", "friend_info"]),
     ...mapState("Record", [
       "friend_chat_record",
@@ -365,7 +365,7 @@ export default {
                 if (type === "jpeg") {
                   let [_, res] = await uni.compressImage({
                     src: path,
-                    quality: 20
+                    quality: 60
                   })
                   const { tempFilePath } = res
                   image_src = await pathToBase64(tempFilePath)
@@ -500,14 +500,20 @@ export default {
     }
   },
   onShow() {
-  	getApp().ws.emit({ type: "setChatFriendId", friendId: this.friendId })
+	if (this.ws_connect) {
+		getApp().ws.emit({ type: "setChatFriendId", friendId: this.friendId })
+	}
   },
   onHide() {
-	getApp().ws.emit({ type: "setChatFriendId" })
+	  if (this.ws_connect) {
+	  	getApp().ws.emit({ type: "setChatFriendId" })
+	  }
     this.saveFriendChatRecord(this.friendId)
   },
   onUnload() {
-	getApp().ws.emit({ type: "setChatFriendId" })
+	if (this.ws_connect) {
+		getApp().ws.emit({ type: "setChatFriendId" })
+	}
     this.saveFriendChatRecord(this.friendId)
 	this.setState({
 	  module: "Info",

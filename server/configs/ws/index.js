@@ -8,7 +8,7 @@ module.exports = (wss, global) => {
     global.user[id].load = false
 
     ws.on("message", async (message) => {
-      const { channel, info } = global.user[id]
+      const { channel = [], info } = global.user[id]
       let data = JSON.parse(message.toString())
       const { type, friendId, record, extend_error } = data
       if (type === "ping") {

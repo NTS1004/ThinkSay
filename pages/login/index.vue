@@ -77,7 +77,7 @@ export default {
           data: { id },
           token
         } = await funcGetAuthLogin(this.formData)
-        getApp().init(id, { ...data, token })
+        getApp().init(id, Object.assign(data, { token }))
         this.$u.route({
           type: "redirect",
           url: "/pages/index/index"

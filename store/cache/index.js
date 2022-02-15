@@ -13,14 +13,23 @@ export default {
   mutations: {
     async handlerCacheImage(state, cache_image_data) {
       const { cache_image } = state
+      const {
+        background: { url: myUrl }
+      } = this.state.Info.info
       let isCache = false
       for (let i in cache_image_data) {
         let src = cache_image_data[i]
+        let imageSrc = src
         if (src && src.includes("www.cjh1004.vip") && !cache_image[src]) {
-          const [_, res] = await uni.getImageInfo({ src })
-          const { path } = res
-          let cache_path = await pathToBase64(path)
-          cache_image[src] = cache_path
+          const [_getErr, { path }] = await uni.getImageInfo({ src: imageSrc })
+          let cache_url = ""
+          if (i === "avatar") {
+            const [_saveErr, { savedFilePath }] = await uni.saveFile({ tempFilePath: path })
+            cache_url = savedFilePath
+          } else {
+            cache_url = await pathToBase64(path)
+          }
+          cache_image[src] = cache_url
           isCache = true
         }
       }

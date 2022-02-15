@@ -8,14 +8,12 @@
         <u-icon class="uIcon" name="checkmark" @tap="putMyInfo"></u-icon>
       </view>
     </view>
-    <view class="mask"></view>
     <view
       class="select-box"
       :style="{ height: `${infoBoxHeight}rpx`, top: `${params.top}px` }"
       @touchstart="touchStart"
       @touchmove.prevent="touchMove"
     >
-      <div class="box image" :style="`${backgroundImage};${translate}`"></div>
     </view>
   </view>
 </template>
