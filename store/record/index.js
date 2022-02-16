@@ -68,13 +68,13 @@ export default {
       this.commit("Cache/handlerCacheImage", { avatar, url })
     },
     // 处理发送的消息，展示在列表
-    handlerFriendChatRecord(state, { last_chat_time, record }) {
+    async handlerFriendChatRecord(state, { last_chat_time, record }) {
       const { previewImages } = state
       const { image_src, image_source_path, chatTime } = record
       let image = image_source_path || image_src || ""
       let isGif = image.includes(".gif")
       if (image && !isGif) {
-        previewImages.set(chatTime, image)
+        previewImages.set(`${chatTime}-${image}`, image)
       }
       let friend_chat_record = state.friend_chat_record
       if (!friend_chat_record[last_chat_time]) friend_chat_record[last_chat_time] = []
@@ -172,9 +172,9 @@ export default {
         for (let o = 0; o < friend_chat_record[i].length; o++) {
           const { image_source_path, image_src, chatTime } = friend_chat_record[i][o]
           let image = image_source_path || image_src || ""
-          let isGif = image.indexOf(".gif") !== -1
+          let isGif = image.includes(".gif")
           if (image && !isGif) {
-            previewImages.set(chatTime, image)
+            previewImages.set(`${chatTime}-${image}`, image)
           }
         }
       }

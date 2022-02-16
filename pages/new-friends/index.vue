@@ -42,7 +42,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("Record", ["new_friends_record", "friends_record_info"])
+    ...mapState("Record", ["new_friends_record"])
   },
   methods: {
     ...mapMutations(["setState"]),
@@ -60,7 +60,7 @@ export default {
             let keyValue = this.new_friends_record[i]
             let data = keyValue.filter((item) => {
               const { name, account, pinyin } = item
-              return item.name.indexOf(e) !== -1 || item.account.indexOf(e) !== -1 || item.pinyin.indexOf(e) !== -1
+              return [name, account, pinyin].includes(e)
             })
             if (data.length > 0) {
               filter_new_friends_record[i] = data

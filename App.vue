@@ -2,7 +2,7 @@
 import { funcPutInitInfo } from "@/api/info/index.js"
 import { funGetChatRecordList, funGetApplyRecordList } from "@/api/record"
 import { mapState, mapMutations, mapActions } from "vuex"
-import { pathToBase64, base64ToPath } from "image-tools"
+import { base64ToPath } from "image-tools"
 import ws from "@/utils/request/webSocket.js"
 import { host } from "@/utils/config.js"
 
@@ -93,7 +93,7 @@ export default {
     init(id, info) {
       this.setInfo(info)
       this.connectWebSocket(id)
-      this.initRequest()
+      this.initRequest(id)
     },
     initRequest(id) {
       if (this.requestTi) clearTimeout(this.requestTi)
@@ -139,7 +139,7 @@ export default {
               let image_source_path = await base64ToPath(image_src)
               let [_, res] = await uni.compressImage({
                 src: image_source_path,
-                quality: 60
+                quality: 25
               })
               const { tempFilePath } = res
               const [_saveErr, { savedFilePath }] = await uni.saveFile({ tempFilePath })

@@ -124,7 +124,6 @@ export default {
   },
   data() {
     return {
-      load: false,
       params: {},
       friendId: null,
       show: false,
@@ -180,6 +179,19 @@ export default {
       }
     }
   },
+  watch: {
+    friend_chat_record: {
+      handler() {
+        this.$nextTick(() => {
+          console.log(this.friendId)
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 300)
+        })
+      },
+      deep: true
+    }
+  },
   onLoad(params) {
     let { screenHeight } = uni.getSystemInfoSync()
     this.screen_height = screenHeight
@@ -190,10 +202,6 @@ export default {
       this.clearBadgeCount(friendId)
       this.getFriendChatRecordList({
         friendId
-      }).then(() => {
-        this.$nextTick(() => {
-          this.scrollToBottom()
-        })
       })
     }
     uni.onKeyboardHeightChange((res) => {
@@ -201,9 +209,6 @@ export default {
       this.keyboard_height = height
       this.linechange()
     })
-  },
-  onReady() {
-    this.load = true
   },
   methods: {
     ...mapMutations(["setState"]),
@@ -219,7 +224,7 @@ export default {
     ...mapActions("Record", ["getFriendChatRecordList"]),
     hander_charTime,
     // 发送信息
-    async send({ msg, image_src, image_width, image_height, image_source, image_source_path }) {
+    async send({ msg, image_src, image_width, image_height, image_cache = {} }) {
       let { friendId, params, info, last_chat_time, update_chat_time, friend_info, network_status } = this
       msg = msg || params.msg
       const { friend, annoyed } = friend_info
@@ -230,44 +235,40 @@ export default {
         last_chat_time = params.chatTime
       }
       let send_status = network_status && friend && !annoyed
+      let content = {}
+      if (image_src) {
+        content = {
+          msg,
+          image_src,
+          image_width,
+          image_height
+        }
+      } else {
+        content = { msg: msg }
+      }
       let record = Object.assign(
         {
           key: `${info.id}`,
-          chatTime: params.chatTime,
-          image_source,
-          image_source_path
+          chatTime: params.chatTime
         },
-        image_src
-          ? {
-              image_src,
-              image_width,
-              image_height,
-              msg: image_src.indexOf("base64") !== -1 ? "[图片]" : "[表情]"
-            }
-          : {
-              msg: msg || message
-            },
-        !send_status
-          ? {
-              send_error: true
-            }
-          : {}
+        content,
+        { send_error: !send_status }
       )
       let data = {
         last_chat_time,
-        record
+        record: Object.assign({}, record, image_cache)
       }
       this.handlerFriendChatRecord(data)
       if (send_status) {
-        getApp().ws.emit({
-          type: "chat",
-          friendId,
-          record,
-          extend_error: {
-            last_chat_time,
-            index: this.last_index
-          }
-        })
+        // getApp().ws.emit({
+        //   type: "chat",
+        //   friendId,
+        //   record,
+        //   extend_error: {
+        //     last_chat_time,
+        //     index: this.last_index
+        //   }
+        // })
       } else {
         let tip
         if (!network_status) {
@@ -288,9 +289,6 @@ export default {
         this.handlerFriendChatRecord(errTipData)
       }
       this.params = {}
-      this.$nextTick(() => {
-        this.scrollToBottom()
-      })
     },
     // 重发信息
     reSend(key, record, index) {
@@ -325,63 +323,53 @@ export default {
     selectImage() {
       plus.gallery.pick(
         ({ files }) => {
-          files.forEach((item) => {
-            uni.getImageInfo({
-              src: item,
-              success: async ({ width, height, type, path }) => {
-                let image_width
-                let image_height
-                if (width > height) {
-                  if (Math.floor(width / 320) > 2) {
-                    image_width = 320
-                  } else {
-                    image_width = 300
-                  }
-                  if (Math.floor(width / image_width) > 1) {
-                    image_height = height / Math.floor(width / image_width)
-                  } else {
-                    image_height = height - (width - image_width)
-                  }
-                } else if (height > width) {
-                  if (height >= 2400) {
-                    image_height = 335
-                  } else if (height >= 1920) {
-                    image_height = 320
-                  } else {
-                    image_height = 300
-                  }
-                  if (Math.floor(height / image_height) > 1) {
-                    image_width = width / Math.floor(height / image_height)
-                  } else {
-                    image_width = width - (height - image_height)
-                  }
-                } else if (width === height) {
-                  image_width = 260
-                  image_height = 260
-                }
-                let image_src
-                let image_source
-                let image_source_path
-                if (type === "jpeg") {
-                  let [_, res] = await uni.compressImage({
-                    src: path,
-                    quality: 60
-                  })
-                  const { tempFilePath } = res
-                  image_src = await pathToBase64(tempFilePath)
-                  image_source = await pathToBase64(path)
-                  image_source_path = await base64ToPath(image_source)
-                } else {
-                  image_src = await pathToBase64(path)
-                }
-                this.send({
-                  image_src,
-                  image_width,
-                  image_height,
-                  image_source,
-                  image_source_path
-                })
+          files.forEach(async (item) => {
+            let image_width
+            let image_height
+            let image_source_path
+            const [_getErr, { width, height, type, path }] = await uni.getImageInfo({ src: item })
+            if (width > height) {
+              if (Math.floor(width / 320) > 2) {
+                image_width = 320
+              } else {
+                image_width = 300
               }
+              if (Math.floor(width / image_width) > 1) {
+                image_height = height / Math.floor(width / image_width)
+              } else {
+                image_height = height - (width - image_width)
+              }
+            } else if (height > width) {
+              if (height >= 2400) {
+                image_height = 335
+              } else if (height >= 1920) {
+                image_height = 320
+              } else {
+                image_height = 300
+              }
+              if (Math.floor(height / image_height) > 1) {
+                image_width = width / Math.floor(height / image_height)
+              } else {
+                image_width = width - (height - image_height)
+              }
+            } else if (width === height) {
+              image_width = 260
+              image_height = 260
+            }
+            const [_, { savedFilePath }] = await uni.saveFile({ tempFilePath: path })
+            image_source_path = savedFilePath
+            const [_compressErr, { tempFilePath }] = await uni.compressImage({
+              src: path,
+              quality: 25
+            })
+            const [_saveErr, { savedFilePath: saveImageSrc }] = await uni.saveFile({ tempFilePath })
+            let image_src = await pathToBase64(path)
+            this.send({
+              msg: "[图片]",
+              image_src,
+              image_width,
+              image_height,
+              image_cache: { image_src: saveImageSrc, image_source_path }
             })
           })
         },
@@ -456,7 +444,7 @@ export default {
                 title: "发送以下图片?",
                 src,
                 isCancel: true,
-                ok: () => this.send({ image_src: src, image_width: width, image_height: height })
+                ok: () => this.send({ msg: "[表情]", image_src: src, image_width: width, image_height: height })
               })
             }
           })
@@ -468,9 +456,9 @@ export default {
       const { image_src, image_source_path, chatTime } = record
       let previewImages = Array.from(this.previewImages.values())
       let ImagesKeys = Array.from(this.previewImages.keys())
-      let current = ImagesKeys.indexOf(chatTime)
       let previewImage = image_source_path || image_src
-      let isGif = previewImage.indexOf(".gif") !== -1
+      let current = ImagesKeys.indexOf(`${chatTime}-${previewImage}`)
+      let isGif = previewImage.includes(".gif")
       if (isGif) {
       } else {
         uni.previewImage({
@@ -500,27 +488,27 @@ export default {
     }
   },
   onShow() {
-	if (this.ws_connect) {
-		getApp().ws.emit({ type: "setChatFriendId", friendId: this.friendId })
-	}
+    if (this.ws_connect) {
+      getApp().ws.emit({ type: "setChatFriendId", friendId: this.friendId })
+    }
   },
   onHide() {
-	  if (this.ws_connect) {
-	  	getApp().ws.emit({ type: "setChatFriendId" })
-	  }
+    if (this.ws_connect) {
+      getApp().ws.emit({ type: "setChatFriendId" })
+    }
     this.saveFriendChatRecord(this.friendId)
   },
   onUnload() {
-	if (this.ws_connect) {
-		getApp().ws.emit({ type: "setChatFriendId" })
-	}
+    if (this.ws_connect) {
+      getApp().ws.emit({ type: "setChatFriendId" })
+    }
     this.saveFriendChatRecord(this.friendId)
-	this.setState({
-	  module: "Info",
-	  state: {
-	    chat_friend_id: ""
-	  }
-	})
+    this.setState({
+      module: "Info",
+      state: {
+        chat_friend_id: ""
+      }
+    })
   }
 }
 </script>

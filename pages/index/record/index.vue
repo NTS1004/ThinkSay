@@ -40,13 +40,13 @@ export default {
         return cache_image[record_avatar] || record_avatar || avatar || ""
       }
     },
-	Name() {
-	   return ({ id, name }) => {
-		   const { friends_record_info } = this
-		   let info_name = friends_record_info[id]?.name
-		   return info_name || name || ""
-	   }
-	},
+    Name() {
+      return ({ id, name }) => {
+        const { friends_record_info } = this
+        let info_name = friends_record_info[id]?.name
+        return info_name || name || ""
+      }
+    },
     message() {
       return (item) => {
         let message

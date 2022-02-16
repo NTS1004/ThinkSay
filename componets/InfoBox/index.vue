@@ -5,7 +5,7 @@
       <slot name="right-operation"></slot>
     </view>
     <view :class="['info', preview ? 'hide' : '']" @tap.stop>
-	  <image class="avatar" :src="avatar" @tap.stop="tapAvatar"></image>
+      <image class="avatar" :src="avatar" @tap.stop="tapAvatar"></image>
       <view class="name">{{ info.name }}</view>
     </view>
     <BackgroundBox :background-info="backgroundInfo" :radius="radius" :preview="preview"></BackgroundBox>
