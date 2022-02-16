@@ -58,8 +58,7 @@ export default {
         } else {
           for (let i in this.new_friends_record) {
             let keyValue = this.new_friends_record[i]
-            let data = keyValue.filter((item) => {
-              const { name, account, pinyin } = item
+            let data = keyValue.filter(({ name, account, pinyin }) => {
               return [name, account, pinyin].includes(e)
             })
             if (data.length > 0) {

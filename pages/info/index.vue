@@ -26,7 +26,7 @@
       <view v-else>
         <view class="option">
           <span>添加方式</span>
-          <span>搜索查询</span>
+          <span>{{ sourceText }}</span>
         </view>
         <view class="btn-box" v-if="info_type === 'meet_friend'">
           <u-button type="primary" class="btn" :custom-style="btnStyle('marginRight')" @tap="putFriendApply">
@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+	  source: "search",
       quiet: false,
       annoyed: false,
       quietWait: null,
@@ -76,6 +77,10 @@ export default {
   },
   computed: {
     ...mapState("Info", ["info", "friend_info", "info_type"]),
+	sourceText() {
+		const { source } = this
+		return source === "scan" ? "扫描二维码" : "信息搜索"
+	},
     btnStyle() {
       return (direction) => {
         let btnStyle = { flex: 1, height: "100rpx" }
@@ -84,7 +89,11 @@ export default {
       }
     }
   },
-  onLoad() {
+  onLoad(options) {
+	const { source } = options
+	if (source) {
+		this.source = source
+	}
     let { quiet, annoyed } = this.info
     const { id: friendId } = this.friend_info
     this.quietList = quiet.map(Number)
@@ -135,7 +144,7 @@ export default {
             this.$Toast(`${name}已将你拉入了黑名单╮(╯▽╰)╭`)
           }, 200)
         } else {
-          await funcPutFriendApply({ friendId: this.friend_info.id, info: this.friend_info })
+          await funcPutFriendApply({ friendId: this.friend_info.id, info: this.friend_info, source: this.source })
         }
       } catch (err) {
         console.log(err)

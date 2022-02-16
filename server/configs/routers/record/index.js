@@ -82,11 +82,11 @@ routers.get("apply/:id/list", async (ctx) => {
       `SELECT ${filed} FROM think_apply a LEFT JOIN think_user b ON a.userId = b.id WHERE status = 'unread' AND friendId = ${id}`
     )
     for (let i = 0; i < data.length; i++) {
-      const { userId, info } = data[i]
+      const { userId, info, source } = data[i]
       let [account, name, avatar, url, top, initials, pinyin] = info.split(",")
       let background = `${url},${top}`
       background = JSON.parse(background)
-      data[i].info = { id: userId, account, name, avatar, background, initials, pinyin }
+      data[i].info = { id: userId, account, name, avatar, background, initials, pinyin, source }
     }
     ctx.body = ctx.echo("success", "", {
       data

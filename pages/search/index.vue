@@ -75,9 +75,8 @@ export default {
         } else {
           for (let i in this.friend_data) {
             let keyValue = this.friend_data[i]
-            let data = keyValue.filter((item) => {
-              const { name, account, pinyin } = item
-              return item.name.indexOf(e) !== -1 || item.account.indexOf(e) !== -1 || item.pinyin.indexOf(e) !== -1
+            let data = keyValue.filter(({ name, account, pinyin }) => {
+              return [name, account, pinyin].includes(e)
             })
             friend = [...friend, ...data]
           }

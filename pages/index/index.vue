@@ -170,7 +170,8 @@ export default {
         const {
           data: [info]
         } = await funcGetSearchFriends({ id })
-        this.toNewFriendInfo(info)
+		info.background = JSON.parse(info.background)
+        this.toNewFriendInfo(info, { source: "scan" })
       } catch (err) {
         console.log(err)
       }
@@ -219,7 +220,7 @@ export default {
         })
       }
     },
-    toNewFriendInfo(info) {
+    toNewFriendInfo(info, params={}) {
       this.setFriendInfo(info)
       this.setState({
         module: "Info",
@@ -228,7 +229,8 @@ export default {
         }
       })
       this.$u.route({
-        url: "/pages/info/index"
+        url: "/pages/info/index",
+		params
       })
     },
     ctrlOut(index) {

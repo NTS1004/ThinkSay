@@ -183,10 +183,9 @@ export default {
     friend_chat_record: {
       handler() {
         this.$nextTick(() => {
-          console.log(this.friendId)
           setTimeout(() => {
             this.scrollToBottom()
-          }, 300)
+          }, 400)
         })
       },
       deep: true

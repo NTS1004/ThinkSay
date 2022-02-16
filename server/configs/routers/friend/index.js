@@ -87,7 +87,7 @@ routers.delete("delete", async (ctx) => {
 routers.put("apply", async (ctx) => {
   const { user, push } = global
   const { id } = ctx.params
-  const { friendId, info: friend_info } = ctx.request.body
+  const { friendId, info: friend_info, source } = ctx.request.body
   const { info } = user[id]
   const { name, avatar, clientId } = info
   try {
@@ -95,12 +95,12 @@ routers.put("apply", async (ctx) => {
       `SELECT ${field}, friends FROM think_user WHERE FIND_IN_SET(${friendId}, friends) AND id = ${id}`
     )
     if (data.length === 0) {
-      if (global.user[friendId]?.channel) {
+      if (user[friendId]?.channel) {
         const { clientId: friend_clientId } = user[friendId].info
         global.user[friendId].channel.push({
           type: "apply",
           friendId: id,
-          info
+          info: Object.assign({}, info, { source })
         })
         push.send({
           notify_id: id,
@@ -116,15 +116,15 @@ routers.put("apply", async (ctx) => {
           `SELECT * FROM think_apply WHERE userId = ${id} AND friendId = ${friendId}`
         )
         if (apply_data) {
-          const { status } = apply_data
-          if (status !== "unread") {
+          const { status, source: apply_source } = apply_data
+          if (status !== "unread" || apply_source !== source) {
             await ctx.db.execute(
-              `UPDATE think_apply SET status = 'unread' WHERE userId = ${id} AND friendId = ${friendId}`
+              `UPDATE think_apply SET source = '${source}', status = 'unread' WHERE userId = ${id} AND friendId = ${friendId}`
             )
           }
         } else {
           await ctx.db.execute(
-            `INSERT INTO think_apply (userId, friendId, status) VALUES (${id}, ${friendId}, 'unread')`
+            `INSERT INTO think_apply (userId, friendId, source, status) VALUES (${id}, ${friendId}, '${source}', 'unread')`
           )
         }
       }
@@ -133,8 +133,8 @@ routers.put("apply", async (ctx) => {
         `UPDATE think_user SET friends = CONCAT(friends, IF(friends,",${id}","${id}")) WHERE id = ${friendId}`
       )
       let record = {
-        msg: `你好, 我是${info.name}`,
-        tips: [`${info.name}把你删了又把你加了回来 ╮(╯-╰)╭`],
+        msg: `你好, 我是${name}`,
+        tips: [`${name}把你删了又把你加了回来 ╮(╯-╰)╭`],
         chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
       }
       if (!global.user[friendId]?.channel) {
@@ -143,6 +143,7 @@ routers.put("apply", async (ctx) => {
           ...record
         })
       } else {
+        const { clientId: friend_clientId } = user[friendId].info
         global.user[friendId].channel.push({
           type: "chat",
           record: {
@@ -156,6 +157,15 @@ routers.put("apply", async (ctx) => {
           type: "update",
           friendId: id,
           info: { friend: 1 }
+        })
+        push.send({
+          notify_id: id,
+          info: { name, avatar },
+          msg: `${name}把你删了又把你加了回来 ╮(╯-╰)╭`,
+          payload: {
+            page: "/pages/new-friends/index"
+          },
+          cid: [friend_clientId]
         })
       }
       global.user[id].channel.push({
@@ -246,7 +256,7 @@ routers.put("accept", async (ctx) => {
             {
               info: friend_info,
               msg,
-              tips: ["以上是打招呼的内容", `你已添加了${info.name}，现在可以开始聊天了。`],
+              tips: ["以上是打招呼的内容", `你已添加了${friend_info.name}，现在可以开始聊天了。`],
               chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
             }
           ],
