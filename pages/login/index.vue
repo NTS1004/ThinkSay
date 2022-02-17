@@ -1,6 +1,6 @@
 <template>
   <view>
-    <view class="tab-box" :style="{ height: `${infoBoxHeight}rpx` }">
+    <view class="tab-box" :style="{ height: `${infoBoxHeight}rpx`, ...background }">
       <view class="status_bar"></view>
       <view class="iconBox">
         <view class="iconfont icon-jiahao uIcon" style="font-size: 38rpx" @tap="goSignUp"></view>
@@ -33,6 +33,7 @@ export default {
   name: "login",
   data() {
     return {
+      backgroundUrl: "https://www.cjh1004.vip/ThinkSay/13.jpg!upyun520/fw/1300",
       formData: {},
       top: 0,
       start_y: 0,
@@ -45,9 +46,14 @@ export default {
     }
   },
   computed: {
-    ...mapState("App", ["infoBoxHeight"])
+    ...mapState("App", ["infoBoxHeight"]),
+    ...mapState("Cache", ["cache_image"]),
+    background() {
+      const { cache_image, backgroundUrl } = this
+      return { backgroundImage: `url(${cache_image[backgroundUrl] ?? backgroundUrl})` }
+    }
   },
-  created() {
+  onLoad() {
     uni.getSystemInfo({
       success: (res) => {
         const { screenWidth, screenHeight } = res
@@ -55,18 +61,16 @@ export default {
         this.screenHeight = screenHeight
       }
     })
-  },
-  onShow() {
-    this.setState({
-      module: "App",
-      state: {
-        lastPage: true
-      }
-    })
+    const { cache_image, backgroundUrl } = this
+    console.log(cache_image)
+    if (!cache_image[backgroundUrl]) {
+      this.handlerCacheImage({ url: backgroundUrl })
+    }
   },
   methods: {
     ...mapMutations(["setState"]),
     ...mapMutations("Info", ["setInfo"]),
+    ...mapMutations("Cache", ["handlerCacheImage"]),
     async getAuthLogin() {
       uni.showLoading({
         title: "登录中..."
@@ -189,6 +193,14 @@ export default {
       return true
     }
     return false
+  },
+  onShow() {
+    this.setState({
+      module: "App",
+      state: {
+        lastPage: true
+      }
+    })
   },
   onHide() {
     this.setState({

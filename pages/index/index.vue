@@ -170,7 +170,7 @@ export default {
         const {
           data: [info]
         } = await funcGetSearchFriends({ id })
-		info.background = JSON.parse(info.background)
+        info.background = JSON.parse(info.background)
         this.toNewFriendInfo(info, { source: "scan" })
       } catch (err) {
         console.log(err)
@@ -192,13 +192,13 @@ export default {
       this.current = index
     },
     toSetBackground() {
-	   if (!this.network_status) {
-		   this.$Toast("当前网络不可用╥﹏╥...")
-		   return
-	   }
-	   this.$u.route({
-	     url: "/pages/background/index"
-	   })
+      if (!this.network_status) {
+        this.$Toast("当前网络不可用╥﹏╥...")
+        return
+      }
+      this.$u.route({
+        url: "/pages/background/index"
+      })
     },
     toSearch() {
       this.$u.route({
@@ -224,7 +224,7 @@ export default {
         })
       }
     },
-    toNewFriendInfo(info, params={}) {
+    toNewFriendInfo(info, params = {}) {
       this.setFriendInfo(info)
       this.setState({
         module: "Info",
@@ -234,7 +234,7 @@ export default {
       })
       this.$u.route({
         url: "/pages/info/index",
-		params
+        params
       })
     },
     ctrlOut(index) {

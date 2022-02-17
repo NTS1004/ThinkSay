@@ -13,9 +13,6 @@ export default {
   mutations: {
     async handlerCacheImage(state, cache_image_data) {
       const { cache_image } = state
-      const {
-        background: { url: myUrl }
-      } = this.state.Info.info
       let isCache = false
       for (let i in cache_image_data) {
         let src = cache_image_data[i]

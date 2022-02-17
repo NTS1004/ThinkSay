@@ -31,7 +31,7 @@ export default {
       this.init(user_info.id, user_info)
       setTimeout(() => {
         plus.navigator.closeSplashscreen()
-      }, 200)
+      }, 240)
     } else {
       uni.redirectTo({
         url: "/pages/login/index",

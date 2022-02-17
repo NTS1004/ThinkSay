@@ -34,7 +34,7 @@
 
 <script>
 import Header from "@/componets/Header/index.vue"
-import { mapState, mapMutations } from "vuex"
+import { mapState } from "vuex"
 import { classification, background } from "./utils/pageData.js"
 
 export default {
@@ -49,9 +49,9 @@ export default {
     }
   },
   computed: {
-	...mapState("App", ["network_status"]),
+    ...mapState("App", ["network_status"]),
     ...mapState("Info", ["info"]),
-	...mapState("Cache", ["cache_image"]),
+    ...mapState("Cache", ["cache_image"]),
     itemInfo() {
       return (info) => {
         let { url, position } = info
@@ -73,10 +73,10 @@ export default {
       })
     },
     goSetBackground(params) {
-	  if (!this.network_status) {
-	  		   this.$Toast("当前网络不可用╥﹏╥...")
-	  		   return
-	  }
+      if (!this.network_status) {
+        this.$Toast("当前网络不可用╥﹏╥...")
+        return
+      }
       const { url, top } = this.info.background
       params.top = params.url === url ? top : 0
       this.$u.route({

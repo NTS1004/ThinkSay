@@ -1,6 +1,6 @@
 <template>
   <view>
-    <view class="tab-box" :style="{ height: `${infoBoxHeight}rpx` }">
+    <view class="tab-box" :style="{ height: `${infoBoxHeight}rpx`, ...background }">
       <view class="status_bar"></view>
       <view class="iconBox"><view class="iconfont icon-zuojiantou uIcon" @tap="goLogIn"></view></view>
       <view class="title">signup</view>
@@ -27,18 +27,31 @@
 
 <script>
 import { funcGetAuthRegister } from "@/api/auth/index.js"
-import { mapState } from "vuex"
+import { mapState, mapMutations } from "vuex"
 export default {
   name: "signup",
   data() {
     return {
-      formData: {}
+      formData: {},
+      backgroundUrl: "https://www.cjh1004.vip/ThinkSay/14.jpg!upyun520/fw/1300"
     }
   },
   computed: {
-    ...mapState("App", ["infoBoxHeight"])
+    ...mapState("App", ["infoBoxHeight"]),
+    ...mapState("Cache", ["cache_image"]),
+    background() {
+      const { cache_image, backgroundUrl } = this
+      return { backgroundImage: `url(${cache_image[backgroundUrl] ?? backgroundUrl})` }
+    }
+  },
+  onLoad() {
+    const { cache_image, backgroundUrl } = this
+    if (!cache_image[backgroundUrl]) {
+      this.handlerCacheImage({ url: backgroundUrl })
+    }
   },
   methods: {
+    ...mapMutations("Cache", ["handlerCacheImage"]),
     async getAuthRegister() {
       uni.showLoading({
         title: "注册中..."
