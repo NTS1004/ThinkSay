@@ -185,7 +185,7 @@ export default {
         this.$nextTick(() => {
           setTimeout(() => {
             this.scrollToBottom()
-          }, 400)
+          }, 320)
         })
       },
       deep: true
@@ -259,15 +259,15 @@ export default {
       }
       this.handlerFriendChatRecord(data)
       if (send_status) {
-        // getApp().ws.emit({
-        //   type: "chat",
-        //   friendId,
-        //   record,
-        //   extend_error: {
-        //     last_chat_time,
-        //     index: this.last_index
-        //   }
-        // })
+        getApp().ws.emit({
+          type: "chat",
+          friendId,
+          record,
+          extend_error: {
+            last_chat_time,
+            index: this.last_index
+          }
+        })
       } else {
         let tip
         if (!network_status) {

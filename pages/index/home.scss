@@ -83,6 +83,11 @@
 .swiper {
   flex: 1;
   margin: 60rpx 0 0 0;
+  transform: 0.3s height;
+}
+
+.swiper-hide {
+  height: 0rpx;
 }
 
 .scroll {

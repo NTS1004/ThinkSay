@@ -28,7 +28,7 @@
         <view class="iconfont icon-tuichu tabIcon" @tap="show = true"></view>
       </view>
     </view>
-    <swiper class="swiper" :current="current" @change="setCurrent">
+    <swiper :class="['swiper', visible ? '' : 'swiper-hide']" :current="current" @change="setCurrent">
       <swiper-item class="record-box">
         <u-alert-tips
           :show="!network_status"
