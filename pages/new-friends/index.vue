@@ -59,7 +59,7 @@ export default {
           for (let i in this.new_friends_record) {
             let keyValue = this.new_friends_record[i]
             let data = keyValue.filter(({ name, account, pinyin }) => {
-              return [name, account, pinyin].includes(e)
+              return `${name}${account}${pinyin}`.includes(e)
             })
             if (data.length > 0) {
               filter_new_friends_record[i] = data
@@ -70,16 +70,17 @@ export default {
       this.filter_new_friends_record = filter_new_friends_record
     },
     toNewFriend(info) {
+	  const { status, source, id } = info
       this.setFriendInfo(info)
       this.setState({
         module: "Info",
         state: {
-          info_type: info.status === "verify" ? "make_friend" : "friend"
+          info_type: status === "verify" ? "make_friend" : "friend"
         }
       })
       this.$u.route({
-        url: info.status === "verify" ? "/pages/info/index" : "/pages/chat/index",
-        params: info.status === "verify" ? {} : { friendId: info.id }
+        url: status === "verify" ? "/pages/info/index" : "/pages/chat/index",
+        params: status === "verify" ? { source } : { friendId: id }
       })
     },
     goHome() {
