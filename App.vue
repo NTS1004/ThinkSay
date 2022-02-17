@@ -183,6 +183,12 @@ export default {
       }
       return json
     },
+    vibrate() {
+      plus.device.vibrate(240)
+      setTimeout(() => {
+        plus.device.vibrate(240)
+      }, 300)
+    },
     receive(data) {
       let { type, friendId, info, record, apply_list, extend_error } = data
       switch (type) {

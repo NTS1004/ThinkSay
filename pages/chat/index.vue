@@ -185,7 +185,7 @@ export default {
         this.$nextTick(() => {
           setTimeout(() => {
             this.scrollToBottom()
-          }, 320)
+          }, 200)
         })
       },
       deep: true

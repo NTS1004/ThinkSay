@@ -2,6 +2,9 @@ import moment from "moment"
 import Toast from "@/utils/toast.js"
 import { base64ToPath } from "image-tools"
 
+let vibrate = {}
+let waitTi = {}
+
 export default {
   namespaced: true,
   state: {
@@ -75,20 +78,16 @@ export default {
       let image = image_source_path || image_src || ""
       let isGif = image.includes(".gif")
       let isBase64 = image.includes("base64")
-      console.log(isBase64)
       if (isBase64) {
-        console.log("1")
         let image_source_path = await base64ToPath(image)
         let [_, { tempFilePath }] = await uni.compressImage({
           src: image_source_path,
           quality: 25
         })
-        console.log("2")
         const [_saveErr, { savedFilePath }] = await uni.saveFile({ tempFilePath })
         image = image_source_path
         record.image_src = savedFilePath
         record.image_source_path = image_source_path
-        console.log("3")
       }
       if (image && !isGif) {
         previewImages.set(`${chatTime}-${image}`, image)
@@ -331,6 +330,16 @@ export default {
           badge_count = 0
           commit("setLastChatTime", last_chat_time)
           commit("setUpdateChatTime", update_chat_time)
+          if (!vibrate[chat_friend_id]) {
+            vibrate[chat_friend_id] = true
+            getApp().vibrate()
+          }
+          if (waitTi[chat_friend_id]) {
+            clearTimeout(waitTi[chat_friend_id])
+          }
+          waitTi[chat_friend_id] = setTimeout(() => {
+            vibrate[chat_friend_id] = false
+          }, 10000)
         }
         // 角标
         user_record[i].badge_count += badge_count
