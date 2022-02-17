@@ -2,7 +2,7 @@
   <view class="chat">
     <Header :title="friend_info.name" :title-style="title_style" @back="toBack">
       <view class="right" slot="header-right">
-        <view class="iconfont icon-shipintonghua uIcon" @tap="show = true"></view>
+        <!-- <view class="iconfont icon-shipintonghua uIcon" @tap="show = true"></view> -->
         <view class="iconfont icon-gengduo uIcon" style="margin-left: 26rpx" @tap="toDetails"></view>
       </view>
     </Header>
