@@ -23,7 +23,7 @@
         <view class="iconfont icon-haoyou tabIcon" :class="{ active: current === 1 }" @tap="setTab(1)">
           <u-badge v-show="friend_tips" :is-dot="true" type="error" :offset="[0, 2]"></u-badge>
         </view>
-        <view class="iconfont icon-qunliao tabIcon" @tap="textPush"></view>
+        <!-- <view class="iconfont icon-qunliao tabIcon" @tap=""></view> -->
         <view class="iconfont icon-tupian tabIcon" @tap="toSetBackground"></view>
         <view class="iconfont icon-tuichu tabIcon" @tap="show = true"></view>
       </view>
@@ -192,9 +192,13 @@ export default {
       this.current = index
     },
     toSetBackground() {
-      this.$u.route({
-        url: "/pages/background/index"
-      })
+	   if (!this.network_status) {
+		   this.$Toast("当前网络不可用╥﹏╥...")
+		   return
+	   }
+	   this.$u.route({
+	     url: "/pages/background/index"
+	   })
     },
     toSearch() {
       this.$u.route({
@@ -280,9 +284,6 @@ export default {
       setTimeout(() => {
         this.visible = !this.tabBarHide
       }, 300)
-    },
-    textPush() {
-      plus.push.createMessage("你在干嘛", ".")
     }
   },
   onHide() {

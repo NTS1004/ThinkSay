@@ -49,11 +49,13 @@ export default {
     }
   },
   computed: {
+	...mapState("App", ["network_status"]),
     ...mapState("Info", ["info"]),
+	...mapState("Cache", ["cache_image"]),
     itemInfo() {
       return (info) => {
         let { url, position } = info
-        return { backgroundImage: `url(${url})`, backgroundPosition: position || "center" }
+        return { backgroundImage: `url(${this.cache_image[url] ?? url})`, backgroundPosition: position || "center" }
       }
     }
   },
@@ -71,6 +73,10 @@ export default {
       })
     },
     goSetBackground(params) {
+	  if (!this.network_status) {
+	  		   this.$Toast("当前网络不可用╥﹏╥...")
+	  		   return
+	  }
       const { url, top } = this.info.background
       params.top = params.url === url ? top : 0
       this.$u.route({

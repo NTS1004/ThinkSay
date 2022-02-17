@@ -34,12 +34,14 @@ export default {
   computed: {
     ...mapState("App", ["statusBarHeight", "infoBoxHeight"]),
     ...mapState("Info", ["info"]),
+	...mapState("Cache", ["cache_image"]),
     noTop() {
       let headerHeight = this.statusBarHeight + uni.upx2px(60)
       return this.params.top >= headerHeight ? "noTop" : ""
     },
     backgroundImage() {
-      return `background-image: url(${this.params.url})`
+	  const { params: { url }, cache_image } = this
+      return `background-image: url(${url})`
     },
     translate() {
       return `transform: translateY(-${this.params.top}px)`

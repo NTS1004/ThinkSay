@@ -40,7 +40,7 @@ class ws {
         this.connect()
       } else {
         if (!store.state.App.isBackground) {
-          Toast("当前网络不可用")
+          Toast("当前网络不可用╥﹏╥...")
         }
       }
       this.networkStatus = isConnected
