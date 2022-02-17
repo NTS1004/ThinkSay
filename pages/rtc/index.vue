@@ -79,7 +79,7 @@
 import { mapState, mapMutations } from "vuex"
 import Header from "@/componets/Header/index.vue"
 import getCtrlType from "./utils/getCtrlType"
-
+import createWindow from "./utils/createWindow"
 export default {
   components: {
     Header
@@ -194,6 +194,7 @@ export default {
       this.$u.route({
         type: "navigateBack"
       })
+      createWindow()
     },
     tapScreen() {
       const { rtc_type, rtc_status } = this
