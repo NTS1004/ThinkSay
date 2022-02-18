@@ -126,8 +126,9 @@ export default {
         this.getFriendList()
       }, 300)
     },
-    async putInitInfo(clientId) {
-      let handlerInfo = this.deleteObjactKey(Object.assign({}, this.info), ["friends", "token", "quiet", "annoyed"])
+    async putInitInfo(clientId, info) {
+      let handlerInfo = this.deleteObjactKey(Object.assign({}, info || this.info), ["friends", "token", "annoyed"])
+	  clientId = clientId || this.clientId
       try {
         await funcPutInitInfo({ info: Object.assign({}, handlerInfo, { clientId }) })
       } catch (err) {
@@ -175,13 +176,11 @@ export default {
     deleteObjactKey(data, keys) {
       let json = {}
       for (let i in data) {
-        if (!keys.includes(i) && !i.includes("cache")) {
-          if (typeof data[i] === "object") {
+        if (!keys.includes(i)) {
+          if (typeof data[i] === "object" && i !== "quiet") {
             let handler_value = {}
             for (let c in data[i]) {
-              if (!c.includes("cache") && !c.includes("height")) {
-                handler_value[c] = data[i][c]
-              }
+              handler_value[c] = data[i][c]
             }
             data[i] = handler_value
           }

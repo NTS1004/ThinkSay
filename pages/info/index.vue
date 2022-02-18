@@ -149,8 +149,6 @@ export default {
       } catch (err) {
         console.log(err)
       }
-      if (annoyed) {
-      }
       setTimeout(
         () => {
           uni.hideLoading()
@@ -199,7 +197,9 @@ export default {
         let index = this.quietList.indexOf(friendId)
         this.quietList.splice(index, 1)
       }
-      this.setInfo(Object.assign(this.info, { quiet: this.quietList }))
+	  let info = Object.assign(this.info, { quiet: this.quietList })
+      this.setInfo(info)
+	  getApp().putInitInfo(info)
     },
     backSetQuiet() {
       if (this.quiet !== this.defaultQuiet) {
@@ -233,6 +233,9 @@ export default {
         type: "navigateBack"
       })
     }
+  },
+  onHide() {
+    this.backSetQuiet()
   },
   onUnload() {
     this.backSetQuiet()

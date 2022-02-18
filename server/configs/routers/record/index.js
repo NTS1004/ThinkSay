@@ -85,16 +85,18 @@ routers.get("apply/:id/list", async (ctx) => {
       const {
         info: { id: friendId, name, avatar }
       } = data[data.length - 1]
-      const { clientId } = user[id].info
-      push.send({
-        notify_id: friendId,
-        info: { name, avatar },
-        msg: "请求添加你为好友",
-        payload: {
-          page: "/pages/new-friends/index"
-        },
-        cid: [clientId]
-      })
+      const { clientId, quiet } = user[id]
+      if (!quiet.includes(friendId)) {
+        push.send({
+          notify_id: friendId,
+          info: { name, avatar },
+          msg: "请求添加你为好友",
+          payload: {
+            page: "/pages/new-friends/index"
+          },
+          cid: [clientId]
+        })
+      }
       await ctx.db.execute(`UPDATE think_apply SET status = 'read' WHERE friendId = ${id}`)
     }
   } catch (err) {

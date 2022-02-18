@@ -14,9 +14,13 @@ routers.put("init", async (ctx) => {
   const { id } = ctx.params
   const { info } = ctx.request.body
   try {
-    global.user[id].info = info
+    let { clientId, quiet, ...reset } = info
+    global.user[id].info = reset
+    global.user[id].clientId = clientId
+    global.user[id].quiet = quiet
     ctx.body = ctx.echo("success")
   } catch (err) {
+    console.log(err)
     ctx.body = ctx.echo("error")
   }
 })

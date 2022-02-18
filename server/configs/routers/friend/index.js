@@ -88,29 +88,31 @@ routers.put("apply", async (ctx) => {
   const { user, push } = global
   const { id } = ctx.params
   const { friendId, info: friend_info, source } = ctx.request.body
-  const { info } = user[id]
-  const { name, avatar, clientId } = info
+  const { info, clientId } = user[id]
+  const { name, avatar } = info
   try {
     let data = await ctx.db.execute(
       `SELECT ${field}, friends FROM think_user WHERE FIND_IN_SET(${friendId}, friends) AND id = ${id}`
     )
     if (data.length === 0) {
       if (user[friendId]?.channel) {
-        const { clientId: friend_clientId } = user[friendId].info
+        const { clientId: friend_clientId, quiet: friend_quiet } = user[friendId]
         global.user[friendId].channel.push({
           type: "apply",
           friendId: id,
           info: Object.assign({}, info, { source })
         })
-        push.send({
-          notify_id: id,
-          info: { name, avatar },
-          msg: `请求添加你为好友`,
-          payload: {
-            page: "/pages/new-friends/index"
-          },
-          cid: [friend_clientId]
-        })
+        if (!friend_quiet.includes(id)) {
+          push.send({
+            notify_id: id,
+            info: { name, avatar },
+            msg: `请求添加你为好友`,
+            payload: {
+              page: "/pages/new-friends/index"
+            },
+            cid: [friend_clientId]
+          })
+        }
       } else {
         let [apply_data] = await ctx.db.execute(
           `SELECT * FROM think_apply WHERE userId = ${id} AND friendId = ${friendId}`
@@ -143,7 +145,7 @@ routers.put("apply", async (ctx) => {
           ...record
         })
       } else {
-        const { clientId: friend_clientId } = user[friendId].info
+        const { clientId: friend_clientId, quiet: friend_quiet } = user[friendId]
         global.user[friendId].channel.push({
           type: "chat",
           record: {
@@ -158,16 +160,18 @@ routers.put("apply", async (ctx) => {
           friendId: id,
           info: { friend: 1 }
         })
-        push.send({
-          notify_id: id,
-          info: { name, avatar },
-          msg: `${name}把你删了又把你加了回来 ╮(╯-╰)╭`,
-          payload: {
-            page: "/pages/chat/index",
-            params: { friendId: id }
-          },
-          cid: [friend_clientId]
-        })
+        if (!friend_quiet.includes(id)) {
+          push.send({
+            notify_id: id,
+            info: { name, avatar },
+            msg: `${name}把你删了又把你加了回来 ╮(╯-╰)╭`,
+            payload: {
+              page: "/pages/chat/index",
+              params: { friendId: id }
+            },
+            cid: [friend_clientId]
+          })
+        }
       }
       global.user[id].channel.push({
         type: "chat",
@@ -209,8 +213,8 @@ routers.put("accept", async (ctx) => {
   const { user, push } = global
   const { id } = ctx.params
   let { friendId, msg, info: friend_info } = ctx.request.body
-  const { info } = user[id]
-  const { name, avatar, clientId } = info
+  const { info, clientId } = user[id]
+  const { name, avatar } = info
   try {
     let sql = [
       `UPDATE think_user SET friends = CONCAT(friends, IF(friends,",${friendId}","${friendId}")) WHERE id = ${id}`,
@@ -222,7 +226,7 @@ routers.put("accept", async (ctx) => {
       chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
     }
     if (global.user[friendId]?.channel) {
-      const { clientId: friend_clientId } = user[friendId].info
+      const { clientId: friend_clientId, quiet: friend_quiet } = user[friendId]
       global.user[friendId].channel.push({
         type: "chat",
         record: {
@@ -233,16 +237,18 @@ routers.put("accept", async (ctx) => {
           }
         }
       })
-      push.send({
-        notify_id: id,
-        info: { name, avatar },
-        msg: "我通过了你的朋友申请，现在我们可以开始聊天了。",
-        payload: {
-          page: "/pages/chat/index",
-          params: { friendId: id }
-        },
-        cid: [friend_clientId]
-      })
+      if (!friend_quiet.includes(id)) {
+        push.send({
+          notify_id: id,
+          info: { name, avatar },
+          msg: "我通过了你的朋友申请，现在我们可以开始聊天了。",
+          payload: {
+            page: "/pages/chat/index",
+            params: { friendId: id }
+          },
+          cid: [friend_clientId]
+        })
+      }
     } else {
       await ctx.axios.post(`http://localhost:1437/record/chat/${friendId}/save`, {
         key: id,
