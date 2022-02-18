@@ -11,20 +11,39 @@ const push = require("./configs/push")
 const Global = require("./utils/global")
 const axios = require("./utils/axios")
 const echo = require("./utils/echo")
+const jwt = require("jsonwebtoken")
 
 const app = new koa()
-
-app.use(async (ctx, next) => {
-  // if(ctx.request.headers['origin'] && Url.parse(ctx.request.headers['origin']).hostname == "cjh1004.vip"){
-
-  //   }
-  ctx.set("Access-Control-Allow-Origin", "*")
-  await next()
-})
 
 global = Object.assign(global, Global)
 global.axios = axios
 global.push = push
+
+app.use(async (ctx, next) => {
+  ctx.set("Access-Control-Allow-Origin", "*")
+  await next()
+})
+
+app.use(async (ctx, next) => {
+  const { url, header } = ctx.request
+  const token = header?.["auth-token"]
+  if (url.includes("/auth/login") || url.includes("/auth/register")) {
+    await next()
+  } else if (!token) {
+    ctx.body = echo("error", {
+      content: "你没有资格访问(ˉ▽￣～) 切~~"
+    })
+  } else {
+    const { id } = await jwt.verify(token, global.secret)
+    if (id) {
+      await next()
+    } else {
+      ctx.body = echo("error", {
+        content: "你没有资格访问(ˉ▽￣～) 切~~"
+      })
+    }
+  }
+})
 
 app.use(bodyparser())
 

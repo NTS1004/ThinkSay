@@ -2,7 +2,6 @@ const router = require("koa-router")
 const routers = new router()
 const { pinyin: PinYin } = require("pinyin-pro")
 const jwt = require("jsonwebtoken")
-const secret = "No_Think_Say"
 const backgroundList = require("./utils/background")
 
 let field = `id, account, password, name, avatar, background, initials, pinyin, friends, quiet, annoyed`
@@ -35,7 +34,7 @@ routers.get("login", async (ctx) => {
         const payload = {
           id: info.id
         }
-        const token = jwt.sign(payload, secret)
+        const token = jwt.sign(payload, global.secret)
         return (ctx.body = ctx.echo("success", "登录成功", {
           data: info,
           token
@@ -96,48 +95,6 @@ routers.get("register", async (ctx) => {
       })
     }
   }
-})
-
-routers.get("status", async (ctx, next) => {
-  let token = ctx.header["auth-token"]
-  await jwt.verify(token, secret, async (err, payload) => {
-    if (err) {
-      ctx.body = ctx.echo("error", {
-        title: "授权失败",
-        content: "身份验证过期，请重新验证"
-      })
-    } else {
-      try {
-        const { id } = payload
-        let data = await ctx.db.execute(`SELECT id, name, avatar, background FROM think_user WHERE id = ${id}`)
-        if (data.length === 0) {
-          ctx.body = ctx.echo("error", {
-            title: "授权失败",
-            content: "授权信息错误"
-          })
-        } else {
-          const { background } = data[0]
-          data[0].background = background = JSON.parse(background)
-          const new_payload = {
-            id
-          }
-          const new_token = jwt.sign(new_payload, secret, {
-            expiresIn: 60 * 60 * 24 * 7
-          })
-          ctx.body = ctx.echo("success", "", {
-            data: data[0],
-            token: new_token
-          })
-        }
-      } catch (err) {
-        ctx.body = ctx.echo("error", {
-          title: "授权失败",
-          content: "服务器出错"
-        })
-      }
-    }
-  })
-  await next()
 })
 
 module.exports = routers.routes()
