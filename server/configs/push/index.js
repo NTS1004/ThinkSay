@@ -57,11 +57,11 @@ class push {
       await axios.post(`${this.baseUrl}/${path}`, body, {
         headers: { token: this.token }
       })
-    } catch (err) {
-      console.log(err)
-      if (err === "token过期") {
-        await this.auth()
-        this.send()
+    } catch ({ response: { status } }) {
+      if (status === 401) {
+        await this.auth().then(() => {
+          this.send({ info, msg, payload, cid, notify_id })
+        })
       }
     }
   }
