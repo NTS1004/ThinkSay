@@ -18,14 +18,14 @@ db.execute = async (sql, single = []) => {
     res = await db.executeTransaction(sql)
   } else {
     res = []
-    sql.forEach(async (item, index) => {
-      let data = await db.executeTransaction(item)
-      if (single === "all" || single.indexOf(index) !== -1) {
+    for (let i = 0; i < sql.length; i++) {
+      let data = await db.executeTransaction(sql[i])
+      if (single === "all" || single.includes(index)) {
         res.push(data[0])
       } else {
         res.push(data)
       }
-    })
+    }
   }
   await db.stopTransaction()
   return res
