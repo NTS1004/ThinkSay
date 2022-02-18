@@ -14,7 +14,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("App", ["ws_connect", "lastPage"]),
+    ...mapState("App", ["ws_connect"]),
     ...mapState("Info", ["info", "chat_friend_id"])
   },
   async onLaunch() {
@@ -47,8 +47,15 @@ export default {
       "receive",
       ({ payload }) => {
         const { page, params = {} } = payload
+        const { friendId } = params
+        let routes = getCurrentPages()
+        let { route } = routes[routes.length - 1]
+        let type = route === "pages/index/index" ? "navigateTo" : "redirectTo"
+		if (this.chat_friend_id === friendId || route === page === "/pages/new-friends/index") {
+		  return
+		}
         this.$u.route({
-          type: this.lastPage ? "navigateTo" : "redirectTo",
+          type,
           url: page,
           params
         })

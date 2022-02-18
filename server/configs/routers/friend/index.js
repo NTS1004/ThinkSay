@@ -163,7 +163,8 @@ routers.put("apply", async (ctx) => {
           info: { name, avatar },
           msg: `${name}把你删了又把你加了回来 ╮(╯-╰)╭`,
           payload: {
-            page: "/pages/new-friends/index"
+            page: "/pages/chat/index",
+            params: { friendId: id }
           },
           cid: [friend_clientId]
         })

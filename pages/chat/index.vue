@@ -124,6 +124,7 @@ export default {
   },
   data() {
     return {
+	  load: false,
       params: {},
       friendId: null,
       show: false,
@@ -201,7 +202,13 @@ export default {
       this.clearBadgeCount(friendId)
       this.getFriendChatRecordList({
         friendId
-      })
+      }).then(() => {
+		  this.$nextTick(() => {
+		    setTimeout(() => {
+		      this.scrollToBottom()
+		    }, 300)
+		  })
+	  })
     }
     uni.onKeyboardHeightChange((res) => {
       const { height } = res
