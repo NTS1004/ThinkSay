@@ -107,9 +107,9 @@ class ws {
 	  }
       setTimeout(() => {
         if (this.networkStatus) {
-          this.reconnect()
+          // this.reconnect()
         }
-      }, 1000)
+      }, 2000)
     })
   }
   reconnect() {

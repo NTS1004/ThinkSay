@@ -12,8 +12,10 @@ routers.get("list", async (ctx) => {
     ctx.body = ctx.echo("success", "", {
       data
     })
+    if (!global.user[id]) global.user[id] = {}
     global.user[id].load = true
   } catch (err) {
+    console.log(err)
     ctx.body = ctx.echo("error", {
       content: "获取好友列表失败"
     })
@@ -55,7 +57,6 @@ routers.get("search", async (ctx) => {
       data
     })
   } catch (err) {
-    console.log(err)
     ctx.body = ctx.echo("error", {
       content: "搜索失败"
     })
@@ -202,7 +203,6 @@ routers.put("apply", async (ctx) => {
     }
     ctx.body = ctx.echo("success", "已发送")
   } catch (err) {
-    console.log(err)
     ctx.body = ctx.echo("error", {
       content: "发送失败"
     })

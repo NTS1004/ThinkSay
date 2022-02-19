@@ -43,7 +43,6 @@ routers.get("chat/:id/list", async (ctx) => {
       await ctx.db.execute(`UPDATE think_record SET status = 'read' WHERE friendId = ${id}`)
     }
   } catch (err) {
-    console.log(err)
     ctx.body = ctx.echo("error")
   }
 })
@@ -59,7 +58,6 @@ routers.post("chat/:friendId/save", async (ctx) => {
     )
     ctx.body = ctx.echo("success")
   } catch (err) {
-    console.log(err)
     ctx.body = ctx.echo("error", err)
   }
 })

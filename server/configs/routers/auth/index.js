@@ -41,7 +41,6 @@ routers.get("login", async (ctx) => {
         }))
       }
     } catch (err) {
-      console.log(err)
       ctx.body = ctx.echo("error", {
         title: "登录失败",
         content: "服务器出错"
@@ -88,7 +87,6 @@ routers.get("register", async (ctx) => {
         ctx.body = ctx.echo("success", "注册成功")
       }
     } catch (err) {
-      console.log(err)
       ctx.body = ctx.echo("error", {
         title: "注册失败",
         content: "服务器出错"
