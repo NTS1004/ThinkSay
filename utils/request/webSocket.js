@@ -62,12 +62,12 @@ class ws {
     })
     this.socketTask.onOpen(() => {
       console.log("连接成功")
-	  store.commit("setState", {
-		  module: "App",
-		  state: {
-			  ws_connect: true
-		  }
-	  })
+      store.commit("setState", {
+        module: "App",
+        state: {
+          ws_connect: true
+        }
+      })
       if (this.connectError) {
         getApp().initRequest(getApp().id)
         this.connectError = false
@@ -96,18 +96,18 @@ class ws {
     })
     this.socketTask.onError((e) => {
       console.log("连接失败")
-	  if (!this.connectError) {
-		  store.commit("setState", {
-		  		  module: "App",
-		  		  state: {
-		  			  ws_connect: false
-		  		  }
-		  })
-		  this.connectError = true
-	  }
+      if (!this.connectError) {
+        store.commit("setState", {
+          module: "App",
+          state: {
+            ws_connect: false
+          }
+        })
+        this.connectError = true
+      }
       setTimeout(() => {
         if (this.networkStatus) {
-          // this.reconnect()
+          this.reconnect()
         }
       }, 2000)
     })

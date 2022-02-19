@@ -17,15 +17,15 @@ routers.get("login", async (ctx) => {
     try {
       let data = await ctx.db.execute(`SELECT ${field} FROM think_user WHERE account = "${account}"`)
       if (data.length === 0) {
-        return (ctx.body = ctx.echo("error", {
+        ctx.body = ctx.echo("error", {
           title: "登录失败",
           content: "账号不存在"
-        }))
+        })
       } else if (password !== data[0].password) {
-        return (ctx.body = ctx.echo("error", {
+        ctx.body = ctx.echo("error", {
           title: "登录失败",
           content: "密码错误"
-        }))
+        })
       } else {
         let info = data[0]
         info.background = JSON.parse(info.background)
@@ -35,10 +35,10 @@ routers.get("login", async (ctx) => {
           id: info.id
         }
         const token = jwt.sign(payload, global.secret)
-        return (ctx.body = ctx.echo("success", "登录成功", {
+        ctx.body = ctx.echo("success", "登录成功", {
           data: info,
           token
-        }))
+        })
       }
     } catch (err) {
       ctx.body = ctx.echo("error", {

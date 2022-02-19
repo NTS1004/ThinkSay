@@ -22,6 +22,7 @@ export default {
     update_chat_time: "",
     // 聊天记录是否全加载完成
     last_page: false,
+    // 朋友列表记录
     friends_list_record: {},
     // 保存下当前聊天记录的Index
     last_index: null,
@@ -95,7 +96,7 @@ export default {
       let friend_chat_record = state.friend_chat_record
       if (!friend_chat_record[last_chat_time]) friend_chat_record[last_chat_time] = []
       friend_chat_record[last_chat_time].push(record)
-      state.friend_chat_record = friend_chat_record
+      state.friend_chat_record = Object.assign({}, friend_chat_record)
       state.last_chat_time = last_chat_time
       state.update_chat_time = chatTime
       state.last_index = friend_chat_record[last_chat_time].length - 1
@@ -297,9 +298,13 @@ export default {
         }
         const new_record = record[record.length - 1]
         let { msg, tips = [], chatTime } = new_record
-
         // 时间逻辑
         let { update_chat_time, last_chat_time, chat_record_details } = user_record[i]
+        const { Record } = this.state
+        if (chat_friend_id === i && Record.update_chat_time) {
+          update_chat_time = Record.update_chat_time
+          last_chat_time = Record.last_chat_time
+        }
         let overtime = moment() > moment(update_chat_time || chatTime).add(5, "minute")
         if (!last_chat_time || overtime) {
           user_record[i].last_chat_time = chatTime
@@ -307,7 +312,7 @@ export default {
         }
         user_record[i].update_chat_time = chatTime
         // 最新记录
-        user_record[i].new_chat_record = { msg, tips, chatTime }
+        user_record[i].new_chat_record = new_record
         if (chat_friend_id == i) {
           if (msg) {
             commit("handlerFriendChatRecord", {

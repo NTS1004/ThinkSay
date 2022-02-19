@@ -102,6 +102,7 @@ module.exports = (wss, global) => {
     })
     ws.on("close", () => {
       delete global.user[id].channel
+      delete global.user[id].ws
     })
   })
 }

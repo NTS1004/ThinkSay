@@ -51,9 +51,9 @@ export default {
         let routes = getCurrentPages()
         let { route } = routes[routes.length - 1]
         let type = route === "pages/index/index" ? "navigateTo" : "redirectTo"
-		if (this.chat_friend_id === friendId || route === page === "/pages/new-friends/index") {
-		  return
-		}
+        if (this.chat_friend_id === friendId || (route === page) === "/pages/new-friends/index") {
+          return
+        }
         this.$u.route({
           type,
           url: page,
@@ -128,7 +128,7 @@ export default {
     },
     async putInitInfo(clientId, info) {
       let handlerInfo = this.deleteObjactKey(Object.assign({}, info || this.info), ["friends", "token", "annoyed"])
-	  clientId = clientId || this.clientId
+      clientId = clientId || this.clientId
       try {
         await funcPutInitInfo({ info: Object.assign({}, handlerInfo, { clientId }) })
       } catch (err) {

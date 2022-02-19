@@ -14,7 +14,7 @@ routers.put("init", async (ctx) => {
   const { id } = ctx.params
   const { info } = ctx.request.body
   try {
-    let { clientId, quiet, ...reset } = info
+    let { clientId, quiet = [], ...reset } = info
     if (!global.user[id]) global.user[id] = {}
     global.user[id].info = reset
     global.user[id].clientId = clientId

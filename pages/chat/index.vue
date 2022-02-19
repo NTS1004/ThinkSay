@@ -124,7 +124,7 @@ export default {
   },
   data() {
     return {
-	  load: false,
+      load: false,
       params: {},
       friendId: null,
       show: false,
@@ -203,12 +203,12 @@ export default {
       this.getFriendChatRecordList({
         friendId
       }).then(() => {
-		  this.$nextTick(() => {
-		    setTimeout(() => {
-		      this.scrollToBottom()
-		    }, 300)
-		  })
-	  })
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.scrollToBottom()
+          }, 300)
+        })
+      })
     }
     uni.onKeyboardHeightChange((res) => {
       const { height } = res
@@ -512,7 +512,12 @@ export default {
     this.setState({
       module: "Info",
       state: {
-        chat_friend_id: ""
+        chat_friend_id: "",
+        last_chat_time: "",
+        update_chat_time: "",
+        last_page: false,
+        last_index: null,
+        previewImages: new Map()
       }
     })
   }
