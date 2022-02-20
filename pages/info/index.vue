@@ -97,7 +97,7 @@ export default {
     let { quiet, annoyed } = this.info
     const { id: friendId } = this.friend_info
     this.quietList = quiet.map(Number)
-    annoyed = annoyed.split(",").map(Number)
+    annoyed = annoyed.map(Number)
     if (this.quietList.includes(friendId)) {
       this.quiet = true
       this.defaultQuiet = true
@@ -181,6 +181,7 @@ export default {
         if (shield === "annoyed") {
           this[shield] = !status
           this.setInfo(data)
+		  getApp().putInitInfo(data)
         }
       } catch (err) {
         console.log(err)
@@ -230,7 +231,8 @@ export default {
     },
     goBack() {
       this.$u.route({
-        type: "navigateBack"
+        type: "navigateBack",
+		animationType: "fade-in"
       })
     }
   },

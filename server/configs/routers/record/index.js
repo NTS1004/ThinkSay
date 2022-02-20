@@ -83,8 +83,8 @@ routers.get("apply/:id/list", async (ctx) => {
       const {
         info: { id: friendId, name, avatar }
       } = data[data.length - 1]
-      const { clientId, quiet } = user[id]
-      if (!quiet.includes(friendId)) {
+      const { clientId, shield } = user[id]
+      if (!shield.includes(friendId)) {
         push.send({
           notify_id: friendId,
           info: { name, avatar },

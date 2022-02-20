@@ -7,7 +7,8 @@ let db = new Mysql({
     port: config.db_port,
     user: config.db_user,
     password: config.db_pass,
-    database: config.db_database
+    database: config.db_database,
+    useConnectionPooling: true
   }
 })
 
@@ -20,7 +21,7 @@ db.execute = async (sql, single = []) => {
     res = []
     for (let i = 0; i < sql.length; i++) {
       let data = await db.executeTransaction(sql[i])
-      if (single === "all" || single.includes(index)) {
+      if (single === "all" || single.includes(i)) {
         res.push(data[0])
       } else {
         res.push(data)

@@ -5,7 +5,8 @@ export default {
     friend_info: {},
     info_type: "",
     friend_tips: false,
-    chat_friend_id: ""
+    chat_friend_id: "",
+    isChat: false
   },
   mutations: {
     setInfo(state, info) {
@@ -13,8 +14,7 @@ export default {
         avatar,
         background: { url }
       } = info
-      const { cache_image } = this.state.Cache
-      state.info = info
+      state.info = Object.assign({}, state.info, info)
       this.commit("Cache/handlerCacheImage", { avatar, url })
       uni.setStorageSync("user-info", info)
     },

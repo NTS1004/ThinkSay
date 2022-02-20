@@ -30,6 +30,7 @@ routers.get("login", async (ctx) => {
         let info = data[0]
         info.background = JSON.parse(info.background)
         info.quiet = info.quiet ? info.quiet.split(",") : []
+        info.annoyed = info.annoyed ? info.annoyed.split(",") : []
         delete info.password
         const payload = {
           id: info.id

@@ -14,11 +14,12 @@ routers.put("init", async (ctx) => {
   const { id } = ctx.params
   const { info } = ctx.request.body
   try {
-    let { clientId, quiet = [], ...reset } = info
+    let { clientId, quiet = [], annoyed = [], ...reset } = info
     if (!global.user[id]) global.user[id] = {}
     global.user[id].info = reset
     global.user[id].clientId = clientId
-    global.user[id].quiet = quiet
+    let shield = [...quiet, ...annoyed].filter((item, index, source) => source.indexOf(item) === index)
+    global.user[id].shield = shield
     ctx.body = ctx.echo("success")
   } catch (err) {
     console.log(err)

@@ -149,7 +149,7 @@ export default {
   },
   computed: {
     ...mapState("App", ["statusBarHeight", "network_status", "ws_connect"]),
-    ...mapState("Info", ["info", "friend_info"]),
+    ...mapState("Info", ["info", "friend_info", "chat_friend_id"]),
     ...mapState("Record", [
       "friend_chat_record",
       "last_chat_time",
@@ -482,44 +482,54 @@ export default {
       })
     },
     toDetails() {
+      uni.hideKeyboard()
       this.setState({
         module: "Info",
         state: {
           info_type: "friend"
         }
       })
-      this.$u.route({
-        url: "/pages/info/index"
+      this.$nextTick(() => {
+        this.$u.route({
+          url: "/pages/info/index"
+        })
       })
+    },
+    switchPage(isChat) {
+      if (this.ws_connect) {
+        getApp().ws.emit({ type: "setChatFriendId", friendId: isChat ? this.friendId : undefined })
+      }
+      this.setState({
+        module: "Info",
+        state: {
+          isChat
+        }
+      })
+    },
+    clearOtherPage() {
+      let pages = getCurrentPages()
+      for (let i = 0; i < pages.length; i++) {
+        const { route, $getAppWebview } = pages[i]
+        if (!["pages/index/index", "pages/info/index"].includes(route) && i !== pages.length - 1 && $getAppWebview()) {
+          $getAppWebview().close("none")
+        }
+      }
     }
   },
   onShow() {
-    if (this.ws_connect) {
-      getApp().ws.emit({ type: "setChatFriendId", friendId: this.friendId })
-    }
+    if (this.showTi) clearTimeout(this.showTi)
+    this.showTi = setTimeout(() => {
+      this.clearOtherPage()
+      this.switchPage(true)
+    }, 300)
   },
   onHide() {
-    if (this.ws_connect) {
-      getApp().ws.emit({ type: "setChatFriendId" })
-    }
+    this.switchPage(false)
     this.saveFriendChatRecord(this.friendId)
   },
   onUnload() {
-    if (this.ws_connect) {
-      getApp().ws.emit({ type: "setChatFriendId" })
-    }
+    this.switchPage(false)
     this.saveFriendChatRecord(this.friendId)
-    this.setState({
-      module: "Info",
-      state: {
-        chat_friend_id: "",
-        last_chat_time: "",
-        update_chat_time: "",
-        last_page: false,
-        last_index: null,
-        previewImages: new Map()
-      }
-    })
   }
 }
 </script>

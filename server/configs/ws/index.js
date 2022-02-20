@@ -39,7 +39,7 @@ module.exports = (wss, global) => {
               ws: friend_ws,
               clientId: friend_clientId,
               chat_friend_id: friendId_chat_friend_id,
-              quiet: friend_quiet
+              shield: friend_shield
             } = global.user[friendId]
             const { msg } = record
             friend_ws.send(
@@ -53,7 +53,7 @@ module.exports = (wss, global) => {
                 }
               })
             )
-            if (friendId_chat_friend_id !== id && !friend_quiet.includes(id)) {
+            if (friendId_chat_friend_id !== id && !friend_shield.includes(id)) {
               push.send({
                 notify_id: friendId,
                 info: { name, avatar },

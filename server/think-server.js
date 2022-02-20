@@ -28,28 +28,24 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-app.use(bodyparser())
-
 app.use(async (ctx, next) => {
-  const { url, header } = ctx.request
-  const token = header?.["auth-token"]
-  if (url.includes("/auth/login") || url.includes("/auth/register")) {
-    await next()
-  } else if (!token) {
+  try {
+    const { url, header } = ctx.request
+    const token = header?.["auth-token"]
+    const skip_verify = url.includes("/auth/login") || url.includes("/auth/register")
+    if (!skip_verify) {
+      const { id } = await jwt.verify(token, global.secret)
+      if (!id) throw "error"
+    }
+  } catch {
     ctx.body = echo("error", {
       content: "你没有资格访问(ˉ▽￣～) 切~~"
     })
-  } else {
-    const { id } = await jwt.verify(token, global.secret)
-    if (id) {
-      await next()
-    } else {
-      ctx.body = echo("error", {
-        content: "你没有资格访问(ˉ▽￣～) 切~~"
-      })
-    }
   }
+  await next()
 })
+
+app.use(bodyparser())
 
 app.use(async (ctx, next) => {
   ctx.db = db

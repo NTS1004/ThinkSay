@@ -97,13 +97,13 @@ routers.put("apply", async (ctx) => {
     )
     if (data.length === 0) {
       if (user[friendId]?.channel) {
-        const { clientId: friend_clientId, quiet: friend_quiet } = user[friendId]
+        const { clientId: friend_clientId, shield: friend_shield } = user[friendId]
         global.user[friendId].channel.push({
           type: "apply",
           friendId: id,
           info: Object.assign({}, info, { source })
         })
-        if (!friend_quiet.includes(id)) {
+        if (!friend_shield.includes(id)) {
           push.send({
             notify_id: id,
             info: { name, avatar },
@@ -146,7 +146,7 @@ routers.put("apply", async (ctx) => {
           ...record
         })
       } else {
-        const { clientId: friend_clientId, quiet: friend_quiet } = user[friendId]
+        const { clientId: friend_clientId, shield: friend_shield } = user[friendId]
         global.user[friendId].channel.push({
           type: "chat",
           record: {
@@ -161,7 +161,7 @@ routers.put("apply", async (ctx) => {
           friendId: id,
           info: { friend: 1 }
         })
-        if (!friend_quiet.includes(id)) {
+        if (!friend_shield.includes(id)) {
           push.send({
             notify_id: id,
             info: { name, avatar },
@@ -226,7 +226,7 @@ routers.put("accept", async (ctx) => {
       chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
     }
     if (global.user[friendId]?.channel) {
-      const { clientId: friend_clientId, quiet: friend_quiet } = user[friendId]
+      const { clientId: friend_clientId, shield: friend_shield } = user[friendId]
       global.user[friendId].channel.push({
         type: "chat",
         record: {
@@ -237,7 +237,7 @@ routers.put("accept", async (ctx) => {
           }
         }
       })
-      if (!friend_quiet.includes(id)) {
+      if (!friend_shield.includes(id)) {
         push.send({
           notify_id: id,
           info: { name, avatar },
@@ -309,6 +309,7 @@ routers.put("set/:shield", async (ctx) => {
     const [_, info] = await ctx.db.execute(sql, [1])
     info.background = JSON.parse(info.background)
     info.quiet = info.quiet ? info.quiet.split(",") : []
+    info.annoyed = info.annoyed ? info.annoyed.split(",") : []
     if (global.user[friendId]?.channel && shield !== "quiet") {
       global.user[friendId].channel.push({
         type: "update",
@@ -322,6 +323,7 @@ routers.put("set/:shield", async (ctx) => {
       data: info
     })
   } catch (err) {
+    console.log(err)
     ctx.body = ctx.echo("error", {
       content: shield === "quiet" ? "设置失败" : `${status ? "加入" : "移除"}黑名单失败`
     })

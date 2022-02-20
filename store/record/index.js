@@ -38,6 +38,7 @@ export default {
       state.previewImages = new Map()
       state.last_chat_time = last_chat_time || ""
       state.update_chat_time = update_chat_time || ""
+      state.last_index = null
     },
     // 更新朋友信息记录
     updateFriendInfo(state, { friendId, info, user_record }) {
@@ -48,10 +49,7 @@ export default {
         chat_friend_id,
         friend_info: { id: friend_id }
       } = this.state.Info
-      const {
-        avatar,
-        background: { url }
-      } = info
+      const { avatar, background } = info
       let update_friend_id = chat_friend_id || friend_id
       friends_record_info[friendId] = Object.assign(friends_record_info[friendId] || {}, info)
       state.friends_record_info = friends_record_info
@@ -70,7 +68,7 @@ export default {
       }
       user_record[friendId].info = friends_record_info[friendId]
       uni.setStorageSync(`user-record-${myId}`, user_record)
-      this.commit("Cache/handlerCacheImage", { avatar, url })
+      this.commit("Cache/handlerCacheImage", { avatar, url: background.url })
     },
     // 处理发送的消息，展示在列表
     async handlerFriendChatRecord(state, { last_chat_time, record }) {
@@ -287,7 +285,7 @@ export default {
     async handlerFriendsChatRecord({ commit }, data) {
       const { id: myId } = this.state.Info.info
       let user_record = await uni.getStorageSync(`user-record-${myId}`)
-      let chat_friend_id = this.state.Info.chat_friend_id
+      let { chat_friend_id, isChat } = this.state.Info
       let update_friend
       for (let i in data) {
         let { info, record = [], badge_count = 1, update } = data[i]
@@ -314,6 +312,8 @@ export default {
         // 最新记录
         user_record[i].new_chat_record = new_record
         if (chat_friend_id == i) {
+          commit("setLastChatTime", last_chat_time)
+          commit("setUpdateChatTime", update_chat_time)
           if (msg) {
             commit("handlerFriendChatRecord", {
               last_chat_time,
@@ -333,18 +333,18 @@ export default {
             }
           }
           badge_count = 0
-          commit("setLastChatTime", last_chat_time)
-          commit("setUpdateChatTime", update_chat_time)
-          if (!vibrate[chat_friend_id]) {
-            vibrate[chat_friend_id] = true
-            getApp().vibrate()
+          if (isChat) {
+            if (!vibrate[chat_friend_id]) {
+              vibrate[chat_friend_id] = true
+              getApp().vibrate()
+            }
+            if (waitTi[chat_friend_id]) {
+              clearTimeout(waitTi[chat_friend_id])
+            }
+            waitTi[chat_friend_id] = setTimeout(() => {
+              vibrate[chat_friend_id] = false
+            }, 10000)
           }
-          if (waitTi[chat_friend_id]) {
-            clearTimeout(waitTi[chat_friend_id])
-          }
-          waitTi[chat_friend_id] = setTimeout(() => {
-            vibrate[chat_friend_id] = false
-          }, 10000)
         }
         // 角标
         user_record[i].badge_count += badge_count

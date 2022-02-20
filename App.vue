@@ -15,9 +15,20 @@ export default {
   },
   computed: {
     ...mapState("App", ["ws_connect"]),
-    ...mapState("Info", ["info", "chat_friend_id"])
+    ...mapState("Info", ["info", "chat_friend_id", "isChat"])
   },
   async onLaunch() {
+    const my_clientId = uni.getStorageSync("clientId")
+    if (!my_clientId) {
+      this.getClientId = true
+      plus.push.getClientInfoAsync(({ clientid: clientId }) => {
+        this.clientId = clientId
+        uni.setStorageSync("clientId", clientId)
+        this.getClientId = false
+      })
+    } else {
+      this.clientId = my_clientId
+    }
     const { statusBarHeight, screenHeight } = uni.getSystemInfoSync()
     this.setState({
       module: "App",
@@ -39,7 +50,7 @@ export default {
         success: () => {
           setTimeout(() => {
             plus.navigator.closeSplashscreen()
-          }, 200)
+          }, 240)
         }
       })
     }
@@ -51,7 +62,7 @@ export default {
         let routes = getCurrentPages()
         let { route } = routes[routes.length - 1]
         let type = route === "pages/index/index" ? "navigateTo" : "redirectTo"
-        if (this.chat_friend_id === friendId || (route === page) === "/pages/new-friends/index") {
+        if ((this.chat_friend_id === friendId && this.isChat) || (route === page) === "/pages/new-friends/index") {
           return
         }
         this.$u.route({
@@ -111,26 +122,20 @@ export default {
         let friend_record_info = uni.getStorageSync(`friends-record-info-${id}`) || {}
         this.setFriendsRecordInfo(friend_record_info)
         let user_record = uni.getStorageSync(`user-record-${id}`) || {}
-        if (!this.clientId) {
-          plus.push.getClientInfoAsync(({ clientid: clientId }) => {
-            this.putInitInfo(clientId)
-            this.getApplyRecordList(user_record)
-          })
-        } else {
-          this.putInitInfo(this.clientId)
-          this.getApplyRecordList(user_record)
-        }
         this.handlerChatRecordList(user_record)
         this.getRecordFriendList(user_record)
         this.getChatRecordList()
         this.getFriendList()
-      }, 300)
+        this.isGetClientId().then(() => {
+          this.putInitInfo()
+          this.getApplyRecordList(user_record)
+        })
+      }, 200)
     },
-    async putInitInfo(clientId, info) {
-      let handlerInfo = this.deleteObjactKey(Object.assign({}, info || this.info), ["friends", "token", "annoyed"])
-      clientId = clientId || this.clientId
+    async putInitInfo(info) {
+      let handlerInfo = this.deleteObjactKey(Object.assign({}, info || this.info), ["friends", "token"])
       try {
-        await funcPutInitInfo({ info: Object.assign({}, handlerInfo, { clientId }) })
+        await funcPutInitInfo({ info: Object.assign({}, handlerInfo, { clientId: this.clientId }) })
       } catch (err) {
         console.log(err)
       }
@@ -177,7 +182,7 @@ export default {
       let json = {}
       for (let i in data) {
         if (!keys.includes(i)) {
-          if (typeof data[i] === "object" && i !== "quiet") {
+          if (typeof data[i] === "object" && !Array.isArray(data[i])) {
             let handler_value = {}
             for (let c in data[i]) {
               handler_value[c] = data[i][c]
@@ -194,6 +199,19 @@ export default {
       setTimeout(() => {
         plus.device.vibrate(240)
       }, 300)
+    },
+    isGetClientId() {
+      return new Promise((resolve, reject) => {
+        if (this.clientId) {
+          resolve()
+        } else if (this.getClientId) {
+          setTimeout(() => {
+            resolve()
+          }, 100)
+        } else {
+          reject()
+        }
+      })
     },
     receive(data) {
       let { type, friendId, info, record, apply_list, extend_error } = data
@@ -241,6 +259,7 @@ export default {
           this.handlerNewFriendsRecord(user_record)
           break
         case "update":
+          console.log(info)
           this.updateFriendInfo({ friendId, info })
           break
         case "out":
