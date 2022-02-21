@@ -210,11 +210,6 @@ export default {
         })
       })
     }
-    uni.onKeyboardHeightChange((res) => {
-      const { height } = res
-      this.keyboard_height = height
-      this.linechange()
-    })
   },
   methods: {
     ...mapMutations(["setState"]),
@@ -499,6 +494,15 @@ export default {
       if (this.ws_connect) {
         getApp().ws.emit({ type: "setChatFriendId", friendId: isChat ? this.friendId : undefined })
       }
+      if (isChat) {
+        uni.onKeyboardHeightChange((res) => {
+          const { height } = res
+          this.keyboard_height = height
+          this.linechange()
+        })
+      } else {
+        uni.offKeyboardHeightChange(() => {})
+      }
       this.setState({
         module: "Info",
         state: {
@@ -510,7 +514,7 @@ export default {
       let pages = getCurrentPages()
       for (let i = 0; i < pages.length; i++) {
         const { route, $getAppWebview } = pages[i]
-        if (!["pages/index/index", "pages/info/index"].includes(route) && i !== pages.length - 1 && $getAppWebview()) {
+        if (!["pages/index/index"].includes(route) && i !== pages.length - 1 && $getAppWebview()) {
           $getAppWebview().close("none")
         }
       }
@@ -519,7 +523,9 @@ export default {
   onShow() {
     if (this.showTi) clearTimeout(this.showTi)
     this.showTi = setTimeout(() => {
-      this.clearOtherPage()
+      setTimeout(() => {
+        this.clearOtherPage()
+      }, 100)
       this.switchPage(true)
     }, 300)
   },
