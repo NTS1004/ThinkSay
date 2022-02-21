@@ -10,7 +10,7 @@ let BASE_URL
 if (alert) {
   BASE_URL = ""
 } else {
-  BASE_URL = `http://${host}`
+  BASE_URL = `https://${host}`
 }
 
 axios.setConfig((config) => {

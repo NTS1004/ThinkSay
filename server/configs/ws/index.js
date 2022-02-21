@@ -22,7 +22,7 @@ module.exports = (wss, global) => {
         if (!global.user[id].load) {
           const {
             data: [friend_info]
-          } = await axios.get(`https://localhost:1437/friend/${id}/search`, {
+          } = await axios.get(`https://cjh1004.vip:1437/friend/${id}/search`, {
             params: { id: friendId }
           })
           const { friend, annoyed } = friend_info
@@ -66,7 +66,7 @@ module.exports = (wss, global) => {
               })
             }
           } else {
-            await axios.post(`https://localhost:1437/record/chat/${friendId}/save`, record)
+            await axios.post(`https://cjh1004.vip:1437/record/chat/${friendId}/save`, record)
           }
         } else {
           ws.send(
