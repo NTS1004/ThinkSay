@@ -83,7 +83,7 @@ routers.get("register", async (ctx) => {
         }).replace(/\s*/g, "")
         pinyin = `${pinyin.toLocaleLowerCase()}/${pinyin.toLocaleUpperCase()}`
         await ctx.db.execute(
-          `INSERT INTO think_user (account, name, password, avatar, background, initials, pinyin, friends, black) VALUES ('${account}', '${name}', '${password}', '${avatar}', '${background}', '${initials}', '${pinyin}', '', '')`
+          `INSERT INTO think_user (account, name, password, avatar, background, initials, pinyin, friends, quiet, annoyed) VALUES ('${account}', '${name}', '${password}', '${avatar}', '${background}', '${initials}', '${pinyin}', '', '', '')`
         )
         ctx.body = ctx.echo("success", "注册成功")
       }
