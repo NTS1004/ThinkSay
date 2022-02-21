@@ -490,7 +490,7 @@ export default {
         })
       })
     },
-    switchPage(isChat) {
+    switchPage(isChat, close) {
       if (this.ws_connect) {
         getApp().ws.emit({ type: "setChatFriendId", friendId: isChat ? this.friendId : undefined })
       }
@@ -505,9 +505,10 @@ export default {
       }
       this.setState({
         module: "Info",
-        state: {
-          isChat
-        }
+        state: (state) => ({
+          isChat,
+          chat_friend_id: close ? "" : state.chat_friend_id
+        })
       })
     },
     clearOtherPage() {
@@ -534,7 +535,7 @@ export default {
     this.saveFriendChatRecord(this.friendId)
   },
   onUnload() {
-    this.switchPage(false)
+    this.switchPage(false, true)
     this.saveFriendChatRecord(this.friendId)
   }
 }

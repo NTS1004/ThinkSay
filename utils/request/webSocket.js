@@ -90,6 +90,12 @@ class ws {
     })
     this.socketTask.onClose(() => {
       console.log("断开连接")
+      store.commit("setState", {
+        module: "App",
+        state: {
+          ws_connect: false
+        }
+      })
       if (!this.is_click_close) {
         this.reconnect()
       }
