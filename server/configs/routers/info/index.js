@@ -18,7 +18,7 @@ routers.put("init", async (ctx) => {
     if (!global.user[id]) global.user[id] = {}
     global.user[id].info = reset
     global.user[id].clientId = clientId
-    let shield = [...quiet, ...annoyed].filter((item, index, source) => source.indexOf(item) === index)
+    let shield = [...quiet, ...annoyed].map(String).filter((item, index, source) => source.indexOf(item) === index)
     global.user[id].shield = shield
     ctx.body = ctx.echo("success")
   } catch (err) {

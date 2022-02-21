@@ -70,7 +70,7 @@ export default {
       this.filter_new_friends_record = filter_new_friends_record
     },
     toNewFriend(info) {
-	  const { status, source, id } = info
+      const { status, source, id } = info
       this.setFriendInfo(info)
       this.setState({
         module: "Info",
@@ -87,7 +87,22 @@ export default {
       this.$u.route({
         type: "navigateBack"
       })
+    },
+    clearOtherPage() {
+      let pages = getCurrentPages()
+      for (let i = 0; i < pages.length; i++) {
+        const { route, $getAppWebview } = pages[i]
+        if (!["pages/index/index"].includes(route) && i !== pages.length - 1 && $getAppWebview()) {
+          $getAppWebview().close("none")
+        }
+      }
     }
+  },
+  onShow() {
+    if (this.showTi) clearTimeout(this.showTi)
+    this.showTi = setTimeout(() => {
+      this.clearOtherPage()
+    }, 400)
   }
 }
 </script>

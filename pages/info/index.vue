@@ -66,7 +66,7 @@ export default {
   },
   data() {
     return {
-	  source: "search",
+      source: "search",
       quiet: false,
       annoyed: false,
       quietWait: null,
@@ -77,10 +77,10 @@ export default {
   },
   computed: {
     ...mapState("Info", ["info", "friend_info", "info_type"]),
-	sourceText() {
-		const { source } = this
-		return source === "scan" ? "扫描二维码" : "信息搜索"
-	},
+    sourceText() {
+      const { source } = this
+      return source === "scan" ? "扫描二维码" : "信息搜索"
+    },
     btnStyle() {
       return (direction) => {
         let btnStyle = { flex: 1, height: "100rpx" }
@@ -90,10 +90,10 @@ export default {
     }
   },
   onLoad(options) {
-	const { source } = options
-	if (source) {
-		this.source = source
-	}
+    const { source } = options
+    if (source) {
+      this.source = source
+    }
     let { quiet, annoyed } = this.info
     const { id: friendId } = this.friend_info
     this.quietList = quiet.map(Number)
@@ -107,11 +107,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["setState"]),
     ...mapMutations("App", ["deleteFriend"]),
     ...mapMutations("Info", ["setInfo"]),
     ...mapMutations("Record", ["handlerNewFriendsRecord", "setNewFriendsRecordStatus", "handlerChatRecordList"]),
     ...mapActions("App", ["getFriendList"]),
     async delFriend() {
+      this.backSetQuiet()
       uni.showLoading({
         title: "删除中..."
       })
@@ -124,6 +126,12 @@ export default {
         this.handlerChatRecordList(user_record)
         this.deleteFriend({ initials, index })
         uni.setStorageSync(`user-record-${this.info.id}`, user_record)
+        this.setState({
+          module: "Record",
+          state: {
+            friend_chat_record: {}
+          }
+        })
         this.$u.route({
           type: "redirectTo",
           url: "/pages/index/index"
@@ -181,7 +189,7 @@ export default {
         if (shield === "annoyed") {
           this[shield] = !status
           this.setInfo(data)
-		  getApp().putInitInfo(data)
+          getApp().putInitInfo(data)
         }
       } catch (err) {
         console.log(err)
@@ -198,9 +206,9 @@ export default {
         let index = this.quietList.indexOf(friendId)
         this.quietList.splice(index, 1)
       }
-	  let info = Object.assign(this.info, { quiet: this.quietList })
+      let info = Object.assign(this.info, { quiet: this.quietList })
       this.setInfo(info)
-	  getApp().putInitInfo(info)
+      getApp().putInitInfo(info)
     },
     backSetQuiet() {
       if (this.quiet !== this.defaultQuiet) {
@@ -232,7 +240,7 @@ export default {
     goBack() {
       this.$u.route({
         type: "navigateBack",
-		animationType: "fade-in"
+        animationType: "fade-in"
       })
     }
   },
