@@ -8,7 +8,9 @@ let db = new Mysql({
     user: config.db_user,
     password: config.db_pass,
     database: config.db_database,
-    useConnectionPooling: true
+    useConnectionPooling: true,
+    connectionLimit: 100, // 一次创建的最大连接数
+    waitForConnections: true // 连接池满了，就等待连接池释放
   }
 })
 

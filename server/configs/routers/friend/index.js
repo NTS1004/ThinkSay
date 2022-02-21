@@ -86,7 +86,7 @@ routers.delete("delete", async (ctx) => {
 })
 
 routers.put("apply", async (ctx) => {
-  const { user, push } = global
+  const { user, push, axios } = global
   const { id } = ctx.params
   const { friendId, info: friend_info, source } = ctx.request.body
   const { info, clientId } = user[id]
@@ -140,8 +140,8 @@ routers.put("apply", async (ctx) => {
         tips: [`${name}把你删了又把你加了回来 ╮(╯-╰)╭`],
         chatTime: ctx.moment().format("YYYY-MM-DD HH:mm:ss")
       }
-      if (!global.user[friendId]?.channel) {
-        await ctx.axios.post(`http://localhost:1437/record/chat/${friendId}/save`, {
+      if (!user[friendId]?.channel) {
+        await axios.post(`https://localhost:1437/record/chat/${friendId}/save`, {
           key: id,
           ...record
         })
@@ -210,7 +210,7 @@ routers.put("apply", async (ctx) => {
 })
 
 routers.put("accept", async (ctx) => {
-  const { user, push } = global
+  const { user, push, axios } = global
   const { id } = ctx.params
   let { friendId, msg, info: friend_info } = ctx.request.body
   const { info, clientId } = user[id]
@@ -250,7 +250,7 @@ routers.put("accept", async (ctx) => {
         })
       }
     } else {
-      await ctx.axios.post(`http://localhost:1437/record/chat/${friendId}/save`, {
+      await axios.post(`https://localhost:1437/record/chat/${friendId}/save`, {
         key: id,
         ...record
       })

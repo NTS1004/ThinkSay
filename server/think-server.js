@@ -1,12 +1,12 @@
 const koa = require("koa")
-const http = require("http")
-// const ssl = require("koa-sslify").default
+const https = require("https")
+const ssl = require("koa-sslify").default
 const router = require("koa-router")
 const webSocket = require("ws")
 const bodyparser = require("koa-bodyparser")
 const jwt = require("jsonwebtoken")
 const moment = require("moment")
-// const fs = require("fs")
+const fs = require("fs")
 const config = require("./configs")
 const wsServer = require("./configs/ws")
 const db = require("./configs/db")
@@ -21,7 +21,7 @@ global = Object.assign(global, Global)
 global.axios = axios
 global.push = push
 
-// app.use(ssl())
+app.use(ssl())
 
 app.use(async (ctx, next) => {
   ctx.set("Access-Control-Allow-Origin", "*")
@@ -54,13 +54,12 @@ app.use(async (ctx, next) => {
   await next()
 })
 
-// const options = {
-//   key: fs.readFileSync("./ssl/2_cjh1004.vip.key"),
-//   cert: fs.readFileSync("./ssl/1_cjh1004.vip_bundle.crt")
-// }
+const options = {
+  key: fs.readFileSync("./ssl/2_cjh1004.vip.key"),
+  cert: fs.readFileSync("./ssl/1_cjh1004.vip_bundle.crt")
+}
 
-// const server = https.createServer(options, app.callback()).listen(config.port)
-const server = http.createServer(app.callback()).listen(config.port)
+const server = https.createServer(options, app.callback()).listen(config.port)
 
 const wss = new webSocket.Server({
   server
